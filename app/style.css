@@ -451,6 +451,23 @@ body.detail-panel-open {
   color: #1a2e4a;
 }
 
+.card-links {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.2rem;
+}
+
+.task-learn-link {
+  color: var(--ms-blue-60);
+  text-decoration: none;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.task-learn-link:hover {
+  text-decoration: underline;
+}
+
 .card-badges {
   display: flex;
   flex-wrap: wrap;
