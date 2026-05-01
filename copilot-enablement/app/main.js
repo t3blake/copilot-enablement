@@ -14,8 +14,7 @@ const state = {
 
 const el = {
   assessmentView: document.getElementById("assessment-view"),
-  startBtn: document.getElementById("start-btn"),
-  reviewResultsBtn: document.getElementById("review-results-btn"),
+  clearAnswersBtn: document.getElementById("clear-answers-btn"),
   boardRows: document.getElementById("board-rows"),
   progressLabel: document.getElementById("progress-label"),
   progressFill: document.getElementById("progress-fill"),
@@ -26,7 +25,9 @@ const el = {
   workloadScores: document.getElementById("workload-scores"),
   statusBadge: document.getElementById("status-badge"),
   downloadJsonBtn: document.getElementById("download-json-btn"),
+  exportScorecardBtn: document.getElementById("export-scorecard-btn"),
   importFile: document.getElementById("import-file"),
+  importFeedback: document.getElementById("import-feedback"),
   detailPanel: document.getElementById("detail-panel"),
   detailTaskTitle: document.getElementById("detail-task-title"),
   detailCloseBtn: document.getElementById("detail-close-btn"),
@@ -476,6 +477,119 @@ function refreshTracker() {
   renderResults();
 }
 
+function setImportFeedback(message, tone = "info") {
+  if (!el.importFeedback) return;
+  el.importFeedback.textContent = message;
+  el.importFeedback.className = `import-feedback visible ${tone}`;
+
+  window.clearTimeout(setImportFeedback.timeoutId);
+  setImportFeedback.timeoutId = window.setTimeout(() => {
+    if (el.importFeedback) {
+      el.importFeedback.textContent = "";
+      el.importFeedback.className = "import-feedback";
+    }
+  }, 2600);
+}
+
+function csvEscape(value) {
+  const raw = String(value ?? "");
+  if (/[",\n]/.test(raw)) {
+    return `"${raw.replace(/"/g, '""')}"`;
+  }
+  return raw;
+}
+
+function downloadCsv(filename, rows) {
+  const csvBody = rows.map((row) => row.map(csvEscape).join(",")).join("\n");
+  const blob = new Blob([csvBody], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = filename;
+  anchor.click();
+  URL.revokeObjectURL(url);
+}
+
+function exportScorecardCsv() {
+  const results = computeResults();
+  const rows = [];
+
+  rows.push(["Copilot Readiness Scorecard Export"]);
+  rows.push(["Exported At", new Date().toISOString()]);
+  rows.push([]);
+  rows.push(["Summary Metrics"]);
+  rows.push(["Metric", "Value"]);
+  rows.push(["Overall Score", `${results.overallPct}%`]);
+  rows.push(["High Gaps", results.highGapCount]);
+  rows.push(["Answered", `${results.answeredCount}/${state.questions.length}`]);
+  rows.push([]);
+
+  rows.push(["Workload Scores"]);
+  rows.push(["Workload", "Score"]);
+  results.workloadScores
+    .sort((a, b) => b.score - a.score)
+    .forEach((entry) => rows.push([entry.workload, `${entry.score}%`]));
+  rows.push([]);
+
+  rows.push(["Top Recommended Actions"]);
+  rows.push(["Rank", "Question ID", "Workload", "Criticality", "Current Answer", "Owner", "Action", "Source URL"]);
+  results.topActions.forEach((item, index) => {
+    rows.push([
+      index + 1,
+      item.q.id,
+      item.q.workload,
+      item.q.criticality,
+      item.response.answer || "not reviewed",
+      item.response.owner || "",
+      item.q.remediationHint,
+      getInfoUrl(item.q),
+    ]);
+  });
+  rows.push([]);
+
+  rows.push(["Question-Level Detail"]);
+  rows.push(["Question ID", "Workload", "Lane", "Criticality", "Weight", "Answer", "Owner", "Comment", "Prompt", "Source URL"]);
+  state.questions.forEach((q) => {
+    const response = getResponse(q.id);
+    rows.push([
+      q.id,
+      q.workload,
+      getLaneForQuestion(q),
+      q.criticality,
+      q.weight,
+      response.answer || "not reviewed",
+      response.owner || "",
+      response.comment || "",
+      q.prompt,
+      getInfoUrl(q),
+    ]);
+  });
+
+  downloadCsv("copilot-readiness-scorecard.csv", rows);
+}
+
+function clearAllAnswers() {
+  const hasAnyData = Object.values(state.responses).some((response) => {
+    const answer = String(response?.answer || "").trim();
+    const comment = String(response?.comment || "").trim();
+    const owner = String(response?.owner || "").trim();
+    return Boolean(answer || comment || owner);
+  });
+
+  if (!hasAnyData) {
+    setImportFeedback("Nothing to clear.", "info");
+    return;
+  }
+
+  const confirmed = window.confirm("Clear all answers, notes, owners, and lane overrides?");
+  if (!confirmed) return;
+
+  state.responses = {};
+  closeDetailPanel();
+  refreshTracker();
+  setImportFeedback("All answers cleared.", "success");
+}
+
 function downloadSnapshot() {
   const payload = {
     exportVersion: "0.2",
@@ -504,21 +618,16 @@ function importSnapshot(file) {
       }
       state.responses = parsed.responses;
       refreshTracker();
+      setImportFeedback(`Imported ${file.name} successfully.`, "success");
     } catch {
-      window.alert("Could not import JSON snapshot.");
+      setImportFeedback("Could not import JSON snapshot.", "error");
     }
   };
   reader.readAsText(file);
 }
 
 function wireEvents() {
-  el.startBtn.addEventListener("click", () => {
-    refreshTracker();
-  });
-
-  el.reviewResultsBtn.addEventListener("click", () => {
-    renderResults();
-  });
+  el.clearAnswersBtn?.addEventListener("click", clearAllAnswers);
 
   el.summaryTabTracker?.addEventListener("click", () => {
     setSummaryTab("tracker");
@@ -529,6 +638,7 @@ function wireEvents() {
   });
 
   el.downloadJsonBtn.addEventListener("click", downloadSnapshot);
+  el.exportScorecardBtn?.addEventListener("click", exportScorecardCsv);
 
   el.importFile.addEventListener("change", (event) => {
     const target = event.target;
