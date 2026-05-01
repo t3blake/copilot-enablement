@@ -1,0 +1,196 @@
+{
+  "exportVersion": "0.2",
+  "exportedAt": "2026-05-01T22:05:00.000Z",
+  "includeBacklog": true,
+  "responses": {
+    "Q-001": {
+      "answer": "yes",
+      "comment": "Licensing baseline complete for production and growth cohorts.",
+      "owner": "John Doe",
+      "lane": ""
+    },
+    "Q-002": {
+      "answer": "yes",
+      "comment": "Identity/mailbox prerequisites continuously validated.",
+      "owner": "John Doe",
+      "lane": ""
+    },
+    "Q-003": {
+      "answer": "yes",
+      "comment": "Supported channels enforced through endpoint policy.",
+      "owner": "Pat Taylor",
+      "lane": ""
+    },
+    "Q-004": {
+      "answer": "yes",
+      "comment": "Network requirements documented and monitored.",
+      "owner": "Pat Taylor",
+      "lane": ""
+    },
+    "Q-005": {
+      "answer": "yes",
+      "comment": "Office Feature Updates task validated in compliance checks.",
+      "owner": "Pat Taylor",
+      "lane": ""
+    },
+    "Q-006": {
+      "answer": "yes",
+      "comment": "MFA enforced with no active exceptions in Copilot scope.",
+      "owner": "Jane Doe",
+      "lane": ""
+    },
+    "Q-007": {
+      "answer": "yes",
+      "comment": "Conditional Access baseline fully enforced including legacy auth block.",
+      "owner": "Jane Doe",
+      "lane": ""
+    },
+    "Q-008": {
+      "answer": "yes",
+      "comment": "Interim oversharing controls applied to high-risk locations.",
+      "owner": "Jane Doe",
+      "lane": ""
+    },
+    "Q-009": {
+      "answer": "yes",
+      "comment": "External sharing baseline standardized and exception-tracked.",
+      "owner": "Jane Doe",
+      "lane": ""
+    },
+    "Q-010": {
+      "answer": "yes",
+      "comment": "Sensitivity labels operational with broad coverage.",
+      "owner": "Jane Doe",
+      "lane": ""
+    },
+    "Q-011": {
+      "answer": "yes",
+      "comment": "DLP baseline active with incident ownership and runbooks.",
+      "owner": "Jane Doe",
+      "lane": ""
+    },
+    "Q-012": {
+      "answer": "yes",
+      "comment": "Audit retention aligned with legal/compliance requirements.",
+      "owner": "Jane Doe",
+      "lane": ""
+    },
+    "Q-013": {
+      "answer": "yes",
+      "comment": "Teams transcription policy aligned to targeted Copilot scenarios.",
+      "owner": "Pat Taylor",
+      "lane": ""
+    },
+    "Q-014": {
+      "answer": "partial",
+      "comment": "Loop/Whiteboard scoped rollout active; broader validation in progress.",
+      "owner": "John Doe",
+      "lane": ""
+    },
+    "Q-015": {
+      "answer": "yes",
+      "comment": "Champion network established and expanded by business unit.",
+      "owner": "John Doe",
+      "lane": ""
+    },
+    "Q-016": {
+      "answer": "yes",
+      "comment": "Enablement and communications integrated into rollout cadence.",
+      "owner": "John Doe",
+      "lane": ""
+    },
+    "Q-017": {
+      "answer": "yes",
+      "comment": "DSPM and SharePoint assessments run monthly with remediation backlog.",
+      "owner": "Jane Doe",
+      "lane": ""
+    },
+    "Q-018": {
+      "answer": "yes",
+      "comment": "Test environment used for policy and scenario pre-validation.",
+      "owner": "Pat Taylor",
+      "lane": ""
+    },
+    "Q-019": {
+      "answer": "yes",
+      "comment": "Access review cadence established for high-risk sites and groups.",
+      "owner": "Jane Doe",
+      "lane": ""
+    },
+    "Q-020": {
+      "answer": "yes",
+      "comment": "Device compliance and app protection policies enforced across managed devices.",
+      "owner": "Pat Taylor",
+      "lane": ""
+    },
+    "Q-021": {
+      "answer": "partial",
+      "comment": "Retention model defined; optimization for transcript scope ongoing.",
+      "owner": "Jane Doe",
+      "lane": ""
+    },
+    "Q-022": {
+      "answer": "yes",
+      "comment": "App privacy/connected experiences baselines validated for Copilot users.",
+      "owner": "Pat Taylor",
+      "lane": ""
+    },
+    "QB-103": {
+      "answer": "partial",
+      "comment": "Data residency edge cases documented for select geos.",
+      "owner": "Jane Doe",
+      "lane": ""
+    },
+    "QB-104": {
+      "answer": "partial",
+      "comment": "Geo alignment remediation plan in flight for two workloads.",
+      "owner": "Jane Doe",
+      "lane": ""
+    },
+    "QB-113": {
+      "answer": "partial",
+      "comment": "Label coverage improving; long-tail legacy repositories still being addressed.",
+      "owner": "Jane Doe",
+      "lane": ""
+    },
+    "QB-117": {
+      "answer": "yes",
+      "comment": "Audit retention windows mapped to investigation and legal obligations.",
+      "owner": "Jane Doe",
+      "lane": ""
+    },
+    "QB-122": {
+      "answer": "yes",
+      "comment": "eDiscovery workflows operational for priority incident types.",
+      "owner": "Jane Doe",
+      "lane": ""
+    },
+    "QB-128": {
+      "answer": "partial",
+      "comment": "Copilot-specific communication compliance policies active for high-risk cohorts.",
+      "owner": "Jane Doe",
+      "lane": ""
+    },
+    "QB-131": {
+      "answer": "yes",
+      "comment": "Mobile access strategy implemented with differentiated controls.",
+      "owner": "Pat Taylor",
+      "lane": ""
+    },
+    "QB-134": {
+      "answer": "partial",
+      "comment": "Archiving governance in place; automation coverage expansion planned.",
+      "owner": "John Doe",
+      "lane": ""
+    },
+    "QB-135": {
+      "answer": "partial",
+      "comment": "Stale repository cleanup process active but not yet fully automated.",
+      "owner": "John Doe",
+      "lane": ""
+    }
+  },
+  "results": {
+    "note": "Sample snapshot for an organization in late-stage optimization."
+  }
+}
