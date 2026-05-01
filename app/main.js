@@ -74,6 +74,7 @@ function normalizeQuestion(rawQuestion, fallbackIndex) {
     rawQuestion.criticality === "high" || rawQuestion.criticality === "medium" || rawQuestion.criticality === "low"
       ? rawQuestion.criticality
       : "medium";
+  const safeDefaultLane = LANE_ORDER.includes(rawQuestion.lane) ? rawQuestion.lane : "";
 
   const numericWeight = Number(rawQuestion.weight);
   const defaultWeight = safeCriticality === "high" ? 8 : safeCriticality === "medium" ? 5 : 3;
@@ -88,6 +89,7 @@ function normalizeQuestion(rawQuestion, fallbackIndex) {
     remediationHint:
       rawQuestion.remediationHint ||
       "Review this control, document current state, and assign an owner for remediation.",
+    defaultLane: safeDefaultLane,
     sourceUrl: String(rawQuestion.sourceUrl || "").trim(),
   };
 }
@@ -177,6 +179,7 @@ function rowStatus(answer) {
 }
 
 function defaultLaneForQuestion(question) {
+  if (LANE_ORDER.includes(question.defaultLane)) return question.defaultLane;
   if (question.criticality === "high") return "first";
   if (question.criticality === "medium") return "then";
   return "later";
@@ -271,11 +274,11 @@ function renderQuestions() {
         empty.className = "lane-empty";
         let emptyMsg = "No tasks";
         if (laneKey === "first") {
-          emptyMsg = "✓ No immediate actions";
+          emptyMsg = "Pilot prerequisites covered";
         } else if (laneKey === "then") {
-          emptyMsg = "Ready for next phase";
+          emptyMsg = "Hardening work not queued";
         } else if (laneKey === "later") {
-          emptyMsg = "Future planning";
+          emptyMsg = "Advanced governance later";
         }
         empty.textContent = emptyMsg;
         lane.appendChild(empty);

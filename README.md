@@ -8,7 +8,7 @@ while linking to deeper official guidance when needed.
 
 ## Quick Links
 
-- **[Launch the app →]()** *(coming soon)*
+- **[Launch the app →](https://t3blake.github.io/copilot-enablement/)**
 - **[Design Document](DESIGN.md)** — full project vision, scope, and architecture
 - **[Contributing](CONTRIBUTING.md)** *(coming soon)* — how to add questions, improve guidance, localize content
 
@@ -16,8 +16,8 @@ while linking to deeper official guidance when needed.
 
 1. **Track questions in a status grid** (domain, answer, status, comment, owner) across Copilot-relevant workloads
 2. **Get a readiness score** with visual traffic-light status (green = ready, yellow = caution, red = action needed)
-3. **Download your results** as JSON (for tracking) or HTML report (for stakeholders)
-4. **Track progress** — save snapshots and compare over time
+3. **Download and re-import your results** as JSON snapshots for workshop follow-up or handoff
+4. **Review a curated core baseline or optional deeper backlog** without leaving the app
 
 ## Scope Guardrail
 
@@ -27,7 +27,7 @@ while linking to deeper official guidance when needed.
 ## Key Features
 
 ✅ **Free & public** — no login, no vendor lock-in, no telemetry  
-✅ **Offline-capable** — all data stays in your browser  
+✅ **Static and portable** — runs as a simple client-side web app  
 ✅ **Copilot-focused** — best practices specifically for M365 Copilot adoption  
 ✅ **Visual & engaging** — inspired by [zerotrust.microsoft.com](https://zerotrust.microsoft.com)  
 ✅ **Accessible** — plain language, no jargon  
@@ -47,7 +47,8 @@ Then open http://localhost:8080/
 
 Usage note:
 - By default, the app loads the scored core baseline question set.
-- To include your expanded workshop backlog, enable "Include expanded draft backlog questions (experimental)" on the intro screen before starting the assessment.
+- To include deeper workshop questions, enable "Include expanded draft backlog questions" before starting the assessment.
+- The expanded backlog is intentionally narrower than before: questions promoted into the curated core baseline were removed from backlog mode to avoid double-scoring the same control.
 
 ## Project Structure
 
@@ -68,19 +69,17 @@ copilot-enablement/
 
 ## Publish to GitHub Pages
 
-1. Push the repo to GitHub.
-2. In your GitHub repo, go to **Settings > Pages**.
-3. Under "Build and deployment," select **Deploy from a branch**.
-4. Set branch to `main` and folder to `/app`.
-5. Click **Save**.
+This repo publishes the static site from the `gh-pages` branch root.
 
-GitHub Pages will deploy the `app/` folder as your site. Visit `https://<your-username>.github.io/<repo-name>/` to view it live.
+1. Push source changes to the main repository branch you use for development.
+2. Publish the `app/` directory contents to the `gh-pages` branch.
+3. In GitHub, go to **Settings > Pages**.
+4. Under "Build and deployment," select **Deploy from a branch**.
+5. Set branch to `gh-pages` and folder to `/ (root)`.
 
-**Note:** The `.nojekyll` file in the root tells GitHub Pages to serve files as-is without Jekyll processing.
-3. Select branch `main` and folder `/app`.
-4. Save and wait for publish.
+The live site is available at [https://t3blake.github.io/copilot-enablement/](https://t3blake.github.io/copilot-enablement/).
 
-Your site URL will be: `https://<org-or-user>.github.io/<repo-name>/`
+**Note:** The `.nojekyll` file in the repo root tells GitHub Pages to serve files as-is without Jekyll processing.
 
 ## Questions or Feedback?
 
