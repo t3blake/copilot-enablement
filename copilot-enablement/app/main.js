@@ -15,7 +15,6 @@ const state = {
 const el = {
   assessmentView: document.getElementById("assessment-view"),
   startBtn: document.getElementById("start-btn"),
-  includeBacklogToggle: document.getElementById("include-backlog-toggle"),
   reviewResultsBtn: document.getElementById("review-results-btn"),
   boardRows: document.getElementById("board-rows"),
   progressLabel: document.getElementById("progress-label"),
@@ -471,7 +470,7 @@ async function loadQuestionBanks() {
 }
 
 function refreshTracker() {
-  setQuestionSet(Boolean(el.includeBacklogToggle?.checked));
+  setQuestionSet(true);
   renderOwnerSuggestions();
   renderQuestions();
   renderResults();
@@ -481,7 +480,7 @@ function downloadSnapshot() {
   const payload = {
     exportVersion: "0.2",
     exportedAt: new Date().toISOString(),
-    includeBacklog: Boolean(el.includeBacklogToggle?.checked),
+    includeBacklog: true,
     responses: state.responses,
     results: computeResults(),
   };
@@ -504,9 +503,6 @@ function importSnapshot(file) {
         throw new Error("Invalid snapshot format.");
       }
       state.responses = parsed.responses;
-      if (typeof parsed.includeBacklog === "boolean" && el.includeBacklogToggle) {
-        el.includeBacklogToggle.checked = parsed.includeBacklog;
-      }
       refreshTracker();
     } catch {
       window.alert("Could not import JSON snapshot.");
@@ -519,12 +515,6 @@ function wireEvents() {
   el.startBtn.addEventListener("click", () => {
     refreshTracker();
   });
-
-  el.includeBacklogToggle?.addEventListener("change", () => {
-    refreshTracker();
-  });
-
-
 
   el.reviewResultsBtn.addEventListener("click", () => {
     renderResults();
