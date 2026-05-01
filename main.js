@@ -1,5 +1,6 @@
 const SCORE_MAP = { yes: 1, partial: 0.5, not_sure: 0.25, no: 0 };
 const LANE_ORDER = ["first", "then", "later"];
+const MS_LEARN_HOME = "https://learn.microsoft.com/microsoft-365/copilot/";
 
 const state = {
   questions: [],
@@ -34,6 +35,7 @@ const el = {
   detailStatus: document.getElementById("detail-status"),
   detailNotes: document.getElementById("detail-notes"),
   charUsed: document.getElementById("char-used"),
+  detailLearnLink: document.getElementById("detail-learn-link"),
   detailOwner: document.getElementById("detail-owner"),
   savedOwnerSelect: document.getElementById("saved-owner-select"),
   ownerSuggestions: document.getElementById("owner-suggestions"),
@@ -62,6 +64,13 @@ function criticalityRank(value) {
   return 1;
 }
 
+function getLearnUrl(question) {
+  const sourceUrl = String(question?.sourceUrl || "").trim();
+  if (!sourceUrl) return MS_LEARN_HOME;
+  if (/^https:\/\/learn\.microsoft\.com\//i.test(sourceUrl)) return sourceUrl;
+  return MS_LEARN_HOME;
+}
+
 function normalizeQuestion(rawQuestion, fallbackIndex) {
   const safeCriticality =
     rawQuestion.criticality === "high" || rawQuestion.criticality === "medium" || rawQuestion.criticality === "low"
@@ -81,7 +90,7 @@ function normalizeQuestion(rawQuestion, fallbackIndex) {
     remediationHint:
       rawQuestion.remediationHint ||
       "Review this control, document current state, and assign an owner for remediation.",
-    sourceUrl: rawQuestion.sourceUrl || "https://adoption.microsoft.com/en-us/copilot/",
+    sourceUrl: rawQuestion.sourceUrl || MS_LEARN_HOME,
   };
 }
 
@@ -194,6 +203,11 @@ function selectTask(questionId) {
   el.charUsed.textContent = String((response.comment || "").length);
   el.detailOwner.value = response.owner || "";
   el.detailLane.value = getLaneForQuestion(question);
+  if (el.detailLearnLink) {
+    const learnUrl = getLearnUrl(question);
+    el.detailLearnLink.href = learnUrl;
+    el.detailLearnLink.setAttribute("aria-label", `Open MS Learn guidance for ${question.id}`);
+  }
 
   el.detailPanel.classList.remove("hidden");
   el.detailPanel.setAttribute("aria-hidden", "false");
@@ -280,9 +294,15 @@ function renderQuestions() {
               <span class="task-badge weight">W${q.weight}</span>
             </div>
             <h4>${q.prompt}</h4>
+            <div class="card-links">
+              <a class="task-learn-link" href="${getLearnUrl(q)}" target="_blank" rel="noopener noreferrer">MS Learn ↗</a>
+            </div>
           `;
 
           card.setAttribute("data-task-id", q.id);
+          card.querySelector(".task-learn-link")?.addEventListener("click", (event) => {
+            event.stopPropagation();
+          });
           card.addEventListener("click", () => {
             selectTask(q.id);
           });
