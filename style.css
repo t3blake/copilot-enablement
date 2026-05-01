@@ -882,3 +882,23 @@ body.detail-panel-open {
     grid-column: 1;
   }
 }
+
+.site-footer {
+  text-align: center;
+  padding: 1.5rem 1rem;
+  margin-top: 2rem;
+  color: var(--ms-neutral-26);
+  font-size: 0.85rem;
+}
+
+.site-footer a {
+  color: var(--ms-blue-50);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 120ms ease;
+}
+
+.site-footer a:hover {
+  color: var(--ms-blue-60);
+  text-decoration: underline;
+}
