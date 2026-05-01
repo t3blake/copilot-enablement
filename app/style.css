@@ -139,6 +139,9 @@ body {
 .view { margin-top: 0.75rem; }
 
 .summary-row {
+  position: sticky;
+  top: 0.65rem;
+  z-index: 2;
   display: grid;
   grid-template-columns: 2fr repeat(3, 1fr);
   gap: 0.62rem;
@@ -164,6 +167,18 @@ body {
   font-size: 1.4rem;
   color: var(--ms-blue-40);
   font-weight: 700;
+}
+
+.summary-cell.score-ready .metric-value {
+  color: var(--ok);
+}
+
+.summary-cell.score-caution .metric-value {
+  color: var(--warn);
+}
+
+.summary-cell.score-action .metric-value {
+  color: var(--bad);
 }
 
 .progress-bar {
@@ -234,18 +249,21 @@ body {
 
 .lane-header {
   color: #ffffff;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  font-size: 0.85rem;
 }
 
 .lane-header.first {
-  background: #243b6b;
+  background: #1a2e4a;
 }
 
 .lane-header.then {
-  background: #4a74b8;
+  background: #2d5c9f;
 }
 
 .lane-header.later {
-  background: #6ea4de;
+  background: #5a8cd9;
 }
 
 .board-rows {
@@ -270,8 +288,10 @@ body {
 
 .board-area-cell h3 {
   margin: 0;
-  font-size: 0.94rem;
+  font-size: 1.04rem;
   color: #0f548c;
+  font-weight: 800;
+  letter-spacing: 0.01em;
 }
 
 .board-area-cell p {
@@ -294,18 +314,18 @@ body {
 
 .board-lanes {
   display: grid;
-  grid-template-columns: repeat(3, minmax(260px, 1fr));
-  gap: 0.5rem;
+  grid-template-columns: repeat(3, minmax(280px, 1fr));
+  gap: 0.72rem;
 }
 
 .board-lane {
   border: 1px dashed #b9d2ea;
   border-radius: 10px;
   min-height: 148px;
-  padding: 0.45rem;
+  padding: 0.65rem;
   display: grid;
   align-content: start;
-  gap: 0.42rem;
+  gap: 0.55rem;
 }
 
 .board-lane.first {
@@ -327,22 +347,24 @@ body {
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.72);
   text-align: center;
-  padding: 0.45rem;
+  padding: 0.75rem 0.5rem;
+  font-weight: 500;
 }
 
 .task-card {
   border: 1px solid #b7d2eb;
   border-radius: 8px;
   background: #ffffff;
-  box-shadow: 0 2px 6px rgba(6, 23, 36, 0.08);
-  padding: 0.42rem;
+  box-shadow: 0 2px 8px rgba(6, 23, 36, 0.1);
+  padding: 0.5rem;
 }
 
 .task-card h4 {
   margin: 0.32rem 0;
-  font-size: 0.79rem;
-  line-height: 1.3;
+  font-size: 0.82rem;
+  line-height: 1.35;
   font-weight: 600;
+  color: #1a2e4a;
 }
 
 .card-badges {
@@ -503,15 +525,19 @@ body {
 
 @media (max-width: 980px) {
   .lane-header-row {
-    grid-template-columns: 180px repeat(3, minmax(220px, 1fr));
+    grid-template-columns: 200px repeat(3, minmax(240px, 1fr));
   }
 
   .board-row {
-    grid-template-columns: 180px 1fr;
+    grid-template-columns: 200px 1fr;
   }
 
   .board-lanes {
-    grid-template-columns: repeat(3, minmax(220px, 1fr));
+    grid-template-columns: repeat(3, minmax(240px, 1fr));
+  }
+
+  .detail-panel {
+    width: min(90%, 100%);
   }
 
   .summary-row { grid-template-columns: 1fr 1fr; }
@@ -523,11 +549,14 @@ body {
 
 .detail-panel {
   margin-top: 0.72rem;
+  margin-left: auto;
+  margin-right: auto;
+  width: min(80%, 900px);
   border: 1px solid rgba(15, 108, 189, 0.2);
   border-radius: 10px;
   background: rgba(255, 255, 255, 0.97);
-  box-shadow: 0 4px 10px rgba(15, 41, 68, 0.05);
-  padding: 0.75rem;
+  box-shadow: 0 6px 16px rgba(15, 41, 68, 0.12);
+  padding: 1rem;
 }
 
 .detail-panel.hidden {

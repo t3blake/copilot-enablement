@@ -206,7 +206,15 @@ function renderQuestions() {
       if (laneQuestions.length === 0) {
         const empty = document.createElement("div");
         empty.className = "lane-empty";
-        empty.textContent = "No tasks";
+        let emptyMsg = "No tasks";
+        if (laneKey === "first") {
+          emptyMsg = "✓ No immediate actions";
+        } else if (laneKey === "then") {
+          emptyMsg = "Ready for next phase";
+        } else if (laneKey === "later") {
+          emptyMsg = "Future planning";
+        }
+        empty.textContent = emptyMsg;
         lane.appendChild(empty);
       } else {
         laneQuestions.forEach((q) => {
@@ -306,15 +314,34 @@ function renderResults() {
   el.highGapCount.textContent = String(results.highGapCount);
   el.answeredCount.textContent = `${results.answeredCount}/${state.questions.length}`;
 
+  // Apply color classes to summary metric cells
+  const overallMetric = el.overallScore.closest(".summary-cell");
+  const highGapMetric = el.highGapCount.closest(".summary-cell");
+  
+  overallMetric?.classList.remove("score-ready", "score-caution", "score-action");
+  highGapMetric?.classList.remove("score-ready", "score-caution", "score-action");
+  
   if (results.overallPct >= 80) {
     el.statusBadge.textContent = "Ready";
     el.statusBadge.className = "status-badge green";
+    overallMetric?.classList.add("score-ready");
   } else if (results.overallPct >= 60) {
     el.statusBadge.textContent = "Caution";
     el.statusBadge.className = "status-badge amber";
+    overallMetric?.classList.add("score-caution");
   } else {
     el.statusBadge.textContent = "Action Needed";
     el.statusBadge.className = "status-badge red";
+    overallMetric?.classList.add("score-action");
+  }
+  
+  // High gaps indicator
+  if (results.highGapCount > 5) {
+    highGapMetric?.classList.add("score-action");
+  } else if (results.highGapCount > 2) {
+    highGapMetric?.classList.add("score-caution");
+  } else {
+    highGapMetric?.classList.add("score-ready");
   }
 
   el.topActions.innerHTML = "";
