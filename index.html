@@ -35,12 +35,13 @@
     <main class="shell">
         <section class="control-strip">
           <div class="panel-row compact">
-            <button id="start-btn" class="btn btn-primary">Refresh Tracker</button>
-            <button id="review-results-btn" class="btn btn-primary">Update Summary</button>
-            <button id="download-json-btn" class="btn btn-subtle">Download JSON</button>
-            <label class="btn btn-subtle file-btn" for="import-file">Import JSON</label>
+            <button id="clear-answers-btn" class="btn btn-warning">Clear Answers</button>
+            <button id="download-json-btn" class="btn btn-primary">Export JSON</button>
+            <button id="export-scorecard-btn" class="btn btn-primary">Export Scorecard CSV</button>
+            <label class="btn btn-primary file-btn" for="import-file">Import JSON</label>
             <input id="import-file" type="file" accept="application/json" />
           </div>
+          <p id="import-feedback" class="import-feedback" role="status" aria-live="polite"></p>
         </section>
 
         <section id="assessment-view" class="view visible">

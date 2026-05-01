@@ -166,6 +166,42 @@ body.detail-panel-open {
   border-color: #115ea3;
 }
 
+.btn-warning {
+  background: #fff4ce;
+  border-color: #f1c40f;
+  color: #6b4f00;
+}
+
+.btn-warning:hover {
+  background: #ffe8a3;
+  border-color: #d8ac00;
+}
+
+.import-feedback {
+  margin: 0;
+  min-height: 1.1rem;
+  font-size: 0.82rem;
+  color: var(--ms-neutral-26);
+  opacity: 0;
+  transition: opacity 140ms ease;
+}
+
+.import-feedback.visible {
+  opacity: 1;
+}
+
+.import-feedback.success {
+  color: var(--ok);
+}
+
+.import-feedback.error {
+  color: var(--bad);
+}
+
+.import-feedback.info {
+  color: var(--ms-blue-50);
+}
+
 .view { margin-top: 0.75rem; }
 
 .summary-hub {
