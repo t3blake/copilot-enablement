@@ -66,18 +66,17 @@ copilot-enablement/
 └── scripts/            ← Utility scripts (TBD)
 ```
 
-## Publish to GitHub Pages (POC)
+## Publish to GitHub Pages
 
-```bash
-git add .
-git commit -m "Prototype: Copilot readiness MVP"
-git push origin main
-```
+1. Push the repo to GitHub.
+2. In your GitHub repo, go to **Settings > Pages**.
+3. Under "Build and deployment," select **Deploy from a branch**.
+4. Set branch to `main` and folder to `/app`.
+5. Click **Save**.
 
-Then in GitHub repo settings:
+GitHub Pages will deploy the `app/` folder as your site. Visit `https://<your-username>.github.io/<repo-name>/` to view it live.
 
-1. Open `Settings -> Pages`.
-2. Set source to `Deploy from a branch`.
+**Note:** The `.nojekyll` file in the root tells GitHub Pages to serve files as-is without Jekyll processing.
 3. Select branch `main` and folder `/app`.
 4. Save and wait for publish.
 
