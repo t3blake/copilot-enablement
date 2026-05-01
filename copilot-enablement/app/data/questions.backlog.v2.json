@@ -8,210 +8,175 @@
       "id": "QB-101",
       "topic": "Enterprise Data Protection",
       "workload": "Copilot and Business Data",
+      "lane": "then",
       "prompt": "Do you allow the use of M365 Copilot Chat for all users?"
     },
     {
       "id": "QB-102",
       "topic": "Enterprise Data Protection",
       "workload": "Copilot and Business Data",
+      "lane": "then",
       "prompt": "Have you trained all users about Enterprise Data Protection and data loss risks with unprotected AI tools?"
     },
     {
       "id": "QB-103",
       "topic": "Data Residency",
       "workload": "Copilot and Business Data",
+      "lane": "later",
       "prompt": "What are your data residency requirements?"
     },
     {
       "id": "QB-104",
       "topic": "Data Residency",
       "workload": "Copilot and Business Data",
+      "lane": "later",
       "prompt": "Do your current tenant geographic locations align with these requirements?"
     },
     {
       "id": "QB-105",
       "topic": "Data Residency",
       "workload": "Copilot and Business Data",
+      "lane": "later",
       "prompt": "In your multi-geo environment, do you have requirements to host groups or sites in specific data locations?"
-    },
-    {
-      "id": "QB-106",
-      "topic": "Conditional Access",
-      "workload": "Access Control",
-      "prompt": "Are all users, including all admins, covered by MFA?"
     },
     {
       "id": "QB-107",
       "topic": "Conditional Access",
       "workload": "Access Control",
+      "lane": "then",
       "prompt": "Do you use additional policies to limit access to cloud services based on conditions such as risk, location, or client app?"
-    },
-    {
-      "id": "QB-108",
-      "topic": "Access Reviews",
-      "workload": "Access Control",
-      "prompt": "How do you perform access reviews for Microsoft Teams?"
-    },
-    {
-      "id": "QB-109",
-      "topic": "Access Reviews",
-      "workload": "Access Control",
-      "prompt": "How do you perform access reviews for Microsoft 365 Groups?"
-    },
-    {
-      "id": "QB-110",
-      "topic": "Access Reviews",
-      "workload": "Access Control",
-      "prompt": "How do you perform access reviews for SharePoint sites?"
     },
     {
       "id": "QB-111",
       "topic": "Information Protection",
       "workload": "Data Security",
+      "lane": "then",
       "prompt": "Describe your maturity in identifying sensitive information."
     },
     {
       "id": "QB-112",
       "topic": "Information Protection",
       "workload": "Data Security",
+      "lane": "then",
       "prompt": "Describe the maturity of your sensitivity labels."
     },
     {
       "id": "QB-113",
       "topic": "Information Protection",
       "workload": "Data Security",
+      "lane": "later",
       "prompt": "Estimate the coverage of identified content with sensitivity labels across SharePoint sites, Microsoft 365 Groups, and Teams."
     },
     {
       "id": "QB-114",
       "topic": "Data Loss Prevention",
       "workload": "Data Security",
+      "lane": "then",
       "prompt": "Describe the maturity of your DLP policies."
-    },
-    {
-      "id": "QB-115",
-      "topic": "Auditing",
-      "workload": "Risk and Compliance",
-      "prompt": "Do you have a process to review audit logs when investigating security or compliance incidents?"
-    },
-    {
-      "id": "QB-116",
-      "topic": "Auditing",
-      "workload": "Risk and Compliance",
-      "prompt": "Have Copilot actions been included in audit log investigation processes?"
     },
     {
       "id": "QB-117",
       "topic": "Content and Activity Explorer",
       "workload": "Risk and Compliance",
+      "lane": "later",
       "prompt": "Do you have a clear definition for how long audit log data must be retained?"
     },
     {
       "id": "QB-118",
       "topic": "Content and Activity Explorer",
       "workload": "Risk and Compliance",
+      "lane": "later",
       "prompt": "Are you performing Content Explorer reviews?"
     },
     {
       "id": "QB-119",
       "topic": "Content and Activity Explorer",
       "workload": "Risk and Compliance",
+      "lane": "later",
       "prompt": "Have you properly configured administrative access for Content Explorer?"
     },
     {
       "id": "QB-120",
       "topic": "Content and Activity Explorer",
       "workload": "Risk and Compliance",
+      "lane": "later",
       "prompt": "Are you performing Activity Explorer reviews?"
     },
     {
       "id": "QB-121",
       "topic": "Content and Activity Explorer",
       "workload": "Risk and Compliance",
+      "lane": "later",
       "prompt": "Have you properly configured administrative access for Activity Explorer?"
     },
     {
       "id": "QB-122",
       "topic": "eDiscovery",
       "workload": "Risk and Compliance",
+      "lane": "later",
       "prompt": "Do you use eDiscovery for internal and external investigations, incidents, and processes?"
     },
     {
       "id": "QB-123",
       "topic": "eDiscovery",
       "workload": "Risk and Compliance",
+      "lane": "later",
       "prompt": "Are Copilot interactions included in your processes for these investigations?"
     },
     {
       "id": "QB-124",
       "topic": "eDiscovery",
       "workload": "Risk and Compliance",
+      "lane": "later",
       "prompt": "Are eDiscovery admin roles adequately protected and stakeholders clearly defined?"
-    },
-    {
-      "id": "QB-125",
-      "topic": "Retention",
-      "workload": "Risk and Compliance",
-      "prompt": "Have you reviewed policies for retention or deletion of Teams chat messages and Copilot interactions?"
-    },
-    {
-      "id": "QB-126",
-      "topic": "Retention",
-      "workload": "Risk and Compliance",
-      "prompt": "Describe your current policy settings for Teams meeting transcripts."
     },
     {
       "id": "QB-127",
       "topic": "Communication Compliance",
       "workload": "Risk and Compliance",
+      "lane": "later",
       "prompt": "Describe the maturity of your Communication Compliance policies in general."
     },
     {
       "id": "QB-128",
       "topic": "Communication Compliance",
       "workload": "Risk and Compliance",
+      "lane": "later",
       "prompt": "Have you added Copilot-specific Communication Compliance policies for sensitive data?"
-    },
-    {
-      "id": "QB-129",
-      "topic": "Endpoint Management",
-      "workload": "Endpoint Management",
-      "prompt": "Describe your current endpoint management solution."
-    },
-    {
-      "id": "QB-130",
-      "topic": "Endpoint Management",
-      "workload": "Endpoint Management",
-      "prompt": "Describe your current level of endpoint protection controls for devices that access Microsoft 365 services."
     },
     {
       "id": "QB-131",
       "topic": "Endpoint Management",
       "workload": "Endpoint Management",
+      "lane": "then",
       "prompt": "Have you established a strategy for access to Copilot apps from mobile devices?"
     },
     {
       "id": "QB-132",
       "topic": "File Permissions",
       "workload": "Data Sharing",
+      "lane": "then",
       "prompt": "Describe your maturity for processes that review the discoverability of shared content through admin-level reports."
     },
     {
       "id": "QB-133",
       "topic": "File Permissions",
       "workload": "Data Sharing",
+      "lane": "first",
       "prompt": "Have you reviewed and discussed requirements for using SharePoint Restricted Search?"
     },
     {
       "id": "QB-134",
       "topic": "Archiving",
       "workload": "Data Sharing",
+      "lane": "later",
       "prompt": "What is your process maturity for identifying outdated or irrelevant document repositories to maintain a high-quality data corpus?"
     },
     {
       "id": "QB-135",
       "topic": "Archiving",
       "workload": "Data Sharing",
+      "lane": "later",
       "prompt": "What is your process maturity for deleting or archiving stale or irrelevant repositories?"
     }
   ]
