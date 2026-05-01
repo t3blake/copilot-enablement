@@ -1,0 +1,168 @@
+{
+  "version": "0.1.0",
+  "title": "Copilot Enablement Hub Question Bank",
+  "lastReviewed": "2026-05-01",
+  "responseOptions": ["yes", "partial", "not_sure", "no"],
+  "questions": [
+    {
+      "id": "Q-001",
+      "controlId": "CPL-001",
+      "workload": "Licensing",
+      "criticality": "high",
+      "weight": 10,
+      "prompt": "Do all intended Copilot users have eligible base licenses plus Microsoft 365 Copilot add-on assigned?",
+      "remediationHint": "Identify unlicensed users, confirm eligible base SKUs, and assign Copilot add-on before pilot expansion.",
+      "sourceUrl": "https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-requirements#prerequisites"
+    },
+    {
+      "id": "Q-002",
+      "controlId": "CPL-002",
+      "workload": "Identity",
+      "criticality": "high",
+      "weight": 10,
+      "prompt": "Do intended Copilot users have Entra accounts and primary mailboxes hosted in Exchange Online?",
+      "remediationHint": "Migrate mailbox dependencies and resolve identity gaps before production rollout.",
+      "sourceUrl": "https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-requirements#prerequisites"
+    },
+    {
+      "id": "Q-003",
+      "controlId": "CPL-003",
+      "workload": "Apps",
+      "criticality": "high",
+      "weight": 9,
+      "prompt": "Are Microsoft 365 Apps deployed and running supported channels (Current or Monthly Enterprise) for Copilot users?",
+      "remediationHint": "Standardize update channel policy and update app builds for pilot ring devices first.",
+      "sourceUrl": "https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-setup#step-1-update-channels"
+    },
+    {
+      "id": "Q-004",
+      "controlId": "CPL-004",
+      "workload": "Network",
+      "criticality": "high",
+      "weight": 9,
+      "prompt": "Does your network allow required Microsoft 365 endpoints and full WSS connectivity for Copilot experiences?",
+      "remediationHint": "Remove blocking proxy or TLS inspection constraints for required endpoints and retest core app scenarios.",
+      "sourceUrl": "https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-requirements#network-requirements"
+    },
+    {
+      "id": "Q-005",
+      "controlId": "CPL-005",
+      "workload": "Apps",
+      "criticality": "high",
+      "weight": 8,
+      "prompt": "Is the Office Feature Updates task allowed to run on schedule for Copilot-enabled devices?",
+      "remediationHint": "Re-enable scheduled task and confirm endpoint policy does not suppress required update behavior.",
+      "sourceUrl": "https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-requirements#run-the-office-feature-updates-task"
+    },
+    {
+      "id": "Q-006",
+      "controlId": "CPL-006",
+      "workload": "Identity",
+      "criticality": "high",
+      "weight": 10,
+      "prompt": "Is MFA enforced for all users and all admin accounts in Copilot scope?",
+      "remediationHint": "Enforce MFA baseline and remove exceptions that bypass strong auth for in-scope users.",
+      "sourceUrl": "https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-setup#multifactor-authentication-mfa"
+    },
+    {
+      "id": "Q-007",
+      "controlId": "CPL-007",
+      "workload": "Identity",
+      "criticality": "high",
+      "weight": 10,
+      "prompt": "Are baseline Conditional Access controls active, including blocking legacy authentication?",
+      "remediationHint": "Roll out baseline Conditional Access policies with staged testing, then enforce tenant-wide for Copilot scope.",
+      "sourceUrl": "https://learn.microsoft.com/en-us/security/zero-trust/copilots/zero-trust-microsoft-365-copilot?context=/microsoft-365/copilot/context/copilot#step-2-deploy-or-validate-your-identity-and-access-policies"
+    },
+    {
+      "id": "Q-008",
+      "controlId": "CPL-008",
+      "workload": "SharePoint and OneDrive",
+      "criticality": "high",
+      "weight": 10,
+      "prompt": "Have you applied oversharing controls (for example restricted search, access review, or restricted discovery) for high-risk content locations?",
+      "remediationHint": "Apply interim oversharing controls on high-risk sites before expanding Copilot license assignment.",
+      "sourceUrl": "https://learn.microsoft.com/en-us/security/zero-trust/copilots/zero-trust-microsoft-365-copilot?context=/microsoft-365/copilot/context/copilot#step-1-deploy-or-validate-your-data-protection-and-get-started-with-compliance-tools"
+    },
+    {
+      "id": "Q-009",
+      "controlId": "CPL-009",
+      "workload": "SharePoint and OneDrive",
+      "criticality": "high",
+      "weight": 9,
+      "prompt": "Is an external sharing baseline defined and enforced for SharePoint and OneDrive?",
+      "remediationHint": "Tighten external sharing defaults, align link policies, and review guest collaboration settings.",
+      "sourceUrl": "https://learn.microsoft.com/en-us/security/zero-trust/copilots/zero-trust-microsoft-365-copilot?context=/microsoft-365/copilot/context/copilot#step-6-deploy-or-validate-secure-collaboration-for-microsoft-teams"
+    },
+    {
+      "id": "Q-010",
+      "controlId": "CPL-010",
+      "workload": "Purview",
+      "criticality": "high",
+      "weight": 10,
+      "prompt": "Are Purview sensitivity labels defined, published, and enabled for SharePoint and OneDrive files?",
+      "remediationHint": "Publish baseline label taxonomy and validate label application in priority collaboration locations.",
+      "sourceUrl": "https://learn.microsoft.com/en-us/purview/get-started-with-sensitivity-labels"
+    },
+    {
+      "id": "Q-011",
+      "controlId": "CPL-011",
+      "workload": "Purview",
+      "criticality": "high",
+      "weight": 9,
+      "prompt": "Are Purview DLP baseline policies active for core data locations (email, OneDrive, SharePoint, Teams where applicable)?",
+      "remediationHint": "Deploy baseline DLP policies in monitor mode first, then move to enforce with clear owner workflows.",
+      "sourceUrl": "https://learn.microsoft.com/en-us/purview/dlp-learn-about-dlp"
+    },
+    {
+      "id": "Q-012",
+      "controlId": "CPL-012",
+      "workload": "Compliance",
+      "criticality": "high",
+      "weight": 8,
+      "prompt": "Is unified audit logging enabled with retention aligned to compliance needs?",
+      "remediationHint": "Enable audit logging, define retention period, and establish recurring review ownership.",
+      "sourceUrl": "https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-setup#audit-logging"
+    },
+    {
+      "id": "Q-013",
+      "controlId": "CPL-013",
+      "workload": "Teams",
+      "criticality": "medium",
+      "weight": 6,
+      "prompt": "For Teams scenarios that need post-meeting Copilot context, are transcription and recording policies configured appropriately?",
+      "remediationHint": "Configure meeting policies for targeted groups and communicate recording and transcription expectations.",
+      "sourceUrl": "https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-requirements#app-requirements"
+    },
+    {
+      "id": "Q-014",
+      "controlId": "CPL-014",
+      "workload": "Apps",
+      "criticality": "medium",
+      "weight": 5,
+      "prompt": "If Loop and Whiteboard Copilot scenarios are in scope, are those tenant settings enabled and validated?",
+      "remediationHint": "Enable required app settings only for in-scope scenarios and validate with pilot users.",
+      "sourceUrl": "https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-requirements#app-requirements"
+    },
+    {
+      "id": "Q-015",
+      "controlId": "CPL-015",
+      "workload": "Adoption",
+      "criticality": "medium",
+      "weight": 6,
+      "prompt": "Is there a defined pilot ring with champions across business functions before broad deployment?",
+      "remediationHint": "Build a cross-functional pilot cohort, assign licenses, and capture structured feedback before scale-out.",
+      "sourceUrl": "https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-setup#step-4---deploy-to-some-users-and-measure-adoption"
+    },
+    {
+      "id": "Q-016",
+      "controlId": "CPL-016",
+      "workload": "Adoption",
+      "criticality": "medium",
+      "weight": 5,
+      "prompt": "Do you have user enablement assets and a communication plan for launch and post-launch support?",
+      "remediationHint": "Prepare role-based onboarding content and rollout communications before expanding licenses.",
+      "sourceUrl": "https://adoption.microsoft.com/en-us/copilot/"
+    }
+  ]
+}

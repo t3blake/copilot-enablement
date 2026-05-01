@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Copilot Enablement Hub</title>
+    <meta
+      name="description"
+      content="Copilot-focused readiness assessment for Microsoft 365 deployments."
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <p class="kicker">Copilot Enablement Tracker</p>
+        <h1>Microsoft 365 Copilot Readiness Tracker</h1>
+      </div>
+      <div class="pill">POC</div>
+    </header>
+
+    <main class="shell">
+        <section class="control-strip">
+          <label class="toggle-row" for="include-backlog-toggle">
+            <input id="include-backlog-toggle" type="checkbox" checked />
+            Include expanded draft backlog questions
+          </label>
+          <div class="panel-row compact">
+            <button id="start-btn" class="btn btn-primary">Refresh Tracker</button>
+            <button id="load-local-btn" class="btn btn-subtle">Load Local</button>
+            <button id="save-progress-btn" class="btn btn-subtle">Save Local</button>
+            <button id="review-results-btn" class="btn btn-primary">Update Summary</button>
+            <button id="download-json-btn" class="btn btn-subtle">Download JSON</button>
+            <label class="btn btn-subtle file-btn" for="import-file">Import JSON</label>
+            <input id="import-file" type="file" accept="application/json" />
+          </div>
+        </section>
+
+        <section id="assessment-view" class="view visible">
+          <div class="summary-row">
+            <div class="summary-cell">
+              <div id="status-badge" class="status-badge">Pending</div>
+              <p id="progress-label">0/0 answered</p>
+              <div class="progress-bar"><div id="progress-fill"></div></div>
+            </div>
+            <div class="summary-cell small">
+              <p class="summary-label">Overall</p>
+              <p id="overall-score" class="metric-value">0%</p>
+            </div>
+            <div class="summary-cell small">
+              <p class="summary-label">High Gaps</p>
+              <p id="high-gap-count" class="metric-value">0</p>
+            </div>
+            <div class="summary-cell small">
+              <p class="summary-label">Completed</p>
+              <p id="answered-count" class="metric-value">0</p>
+            </div>
+          </div>
+
+          <div class="tracker-board-wrap">
+            <div class="lane-header-row">
+              <div class="area-header-cell">Category</div>
+              <div class="lane-header first">First</div>
+              <div class="lane-header then">Then</div>
+              <div class="lane-header later">Later</div>
+            </div>
+            <div id="board-rows" class="board-rows"></div>
+          </div>
+        </section>
+
+        <section id="detail-panel" class="detail-panel hidden">
+          <div class="detail-header">
+            <h3 id="detail-task-title">Selected Task</h3>
+            <button id="detail-close-btn" class="detail-close" aria-label="Close detail panel">×</button>
+          </div>
+          <div class="detail-body">
+            <div class="detail-row">
+              <label for="detail-status">Status:</label>
+              <select id="detail-status" class="detail-select">
+                <option value="">Not reviewed</option>
+                <option value="yes">Yes</option>
+                <option value="partial">Partial</option>
+                <option value="not_sure">Not sure</option>
+                <option value="no">No</option>
+              </select>
+              <a href="#" class="view-details-link">View details ↗</a>
+            </div>
+            <div class="detail-row notes-row">
+              <label for="detail-notes">Notes:</label>
+              <textarea id="detail-notes" class="detail-textarea" placeholder="Add notes about this task..."></textarea>
+              <span class="char-count"><span id="char-used">0</span>/1000</span>
+            </div>
+            <div class="detail-row meta-row">
+              <label for="detail-owner">Owner:</label>
+              <input type="text" id="detail-owner" class="detail-input" placeholder="Assign owner">
+            </div>
+            <div class="detail-row lane-row">
+              <label for="detail-lane">Lane:</label>
+              <select id="detail-lane" class="detail-select">
+                <option value="first">First</option>
+                <option value="then">Then</option>
+                <option value="later">Later</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+        <section id="results-view" class="view visible results-panel">
+          <h2>Tracker Summary</h2>
+          <section>
+            <h3>Top Recommended Actions</h3>
+            <ol id="top-actions" class="top-actions"></ol>
+          </section>
+          <section>
+            <h3>Score by Workload</h3>
+            <div id="workload-scores" class="workload-scores"></div>
+          </section>
+        </section>
+    </main>
+
+    <script type="module" src="main.js"></script>
+  </body>
+</html>

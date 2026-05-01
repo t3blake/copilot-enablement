@@ -1,0 +1,544 @@
+const STORAGE_KEY = "copilot-enable-hub.tracker.v2";
+const SCORE_MAP = { yes: 1, partial: 0.5, not_sure: 0.25, no: 0 };
+const LANE_ORDER = ["first", "then", "later"];
+
+const state = {
+  questions: [],
+  responses: {},
+  collapsedWorkloads: {},
+  selectedTaskId: null,
+  questionBanks: {
+    core: [],
+    backlog: [],
+  },
+};
+
+const el = {
+  assessmentView: document.getElementById("assessment-view"),
+  resultsView: document.getElementById("results-view"),
+  startBtn: document.getElementById("start-btn"),
+  loadLocalBtn: document.getElementById("load-local-btn"),
+  includeBacklogToggle: document.getElementById("include-backlog-toggle"),
+  saveProgressBtn: document.getElementById("save-progress-btn"),
+  reviewResultsBtn: document.getElementById("review-results-btn"),
+  boardRows: document.getElementById("board-rows"),
+  progressLabel: document.getElementById("progress-label"),
+  progressFill: document.getElementById("progress-fill"),
+  overallScore: document.getElementById("overall-score"),
+  highGapCount: document.getElementById("high-gap-count"),
+  answeredCount: document.getElementById("answered-count"),
+  topActions: document.getElementById("top-actions"),
+  workloadScores: document.getElementById("workload-scores"),
+  statusBadge: document.getElementById("status-badge"),
+  downloadJsonBtn: document.getElementById("download-json-btn"),
+  importFile: document.getElementById("import-file"),
+  detailPanel: document.getElementById("detail-panel"),
+  detailTaskTitle: document.getElementById("detail-task-title"),
+  detailCloseBtn: document.getElementById("detail-close-btn"),
+  detailStatus: document.getElementById("detail-status"),
+  detailNotes: document.getElementById("detail-notes"),
+  charUsed: document.getElementById("char-used"),
+  detailOwner: document.getElementById("detail-owner"),
+  detailLane: document.getElementById("detail-lane"),
+};
+
+function criticalityRank(value) {
+  if (value === "high") return 3;
+  if (value === "medium") return 2;
+  return 1;
+}
+
+function normalizeQuestion(rawQuestion, fallbackIndex) {
+  const safeCriticality =
+    rawQuestion.criticality === "high" || rawQuestion.criticality === "medium" || rawQuestion.criticality === "low"
+      ? rawQuestion.criticality
+      : "medium";
+
+  const numericWeight = Number(rawQuestion.weight);
+  const defaultWeight = safeCriticality === "high" ? 8 : safeCriticality === "medium" ? 5 : 3;
+
+  return {
+    id: rawQuestion.id || `QX-${fallbackIndex + 1}`,
+    controlId: rawQuestion.controlId || null,
+    workload: rawQuestion.workload || rawQuestion.topic || "General",
+    criticality: safeCriticality,
+    weight: Number.isFinite(numericWeight) && numericWeight > 0 ? numericWeight : defaultWeight,
+    prompt: rawQuestion.prompt || "Question text unavailable.",
+    remediationHint:
+      rawQuestion.remediationHint ||
+      "Review this control, document current state, and assign an owner for remediation.",
+    sourceUrl: rawQuestion.sourceUrl || "https://adoption.microsoft.com/en-us/copilot/",
+  };
+}
+
+function getResponse(id) {
+  if (!state.responses[id]) {
+    state.responses[id] = { answer: "", comment: "", owner: "", lane: "" };
+  }
+  return state.responses[id];
+}
+
+function setQuestionSet(includeBacklog) {
+  const byId = new Map();
+
+  state.questionBanks.core.forEach((q, idx) => {
+    const normalized = normalizeQuestion(q, idx);
+    byId.set(normalized.id, normalized);
+  });
+
+  if (includeBacklog) {
+    state.questionBanks.backlog.forEach((q, idx) => {
+      const normalized = normalizeQuestion(q, idx + 1000);
+      byId.set(normalized.id, normalized);
+    });
+  }
+
+  state.questions = Array.from(byId.values()).sort((a, b) => {
+    const workloadCompare = String(a.workload).localeCompare(String(b.workload));
+    if (workloadCompare !== 0) return workloadCompare;
+    return String(a.id).localeCompare(String(b.id));
+  });
+
+  const validIds = new Set(state.questions.map((q) => q.id));
+  state.responses = Object.fromEntries(
+    Object.entries(state.responses).filter(([id]) => validIds.has(id))
+  );
+}
+
+function getAnswerCount() {
+  return state.questions.filter((q) => getResponse(q.id).answer).length;
+}
+
+function updateProgress() {
+  const answered = getAnswerCount();
+  const total = state.questions.length;
+  el.progressLabel.textContent = `${answered}/${total} answered`;
+  const pct = total === 0 ? 0 : (answered / total) * 100;
+  el.progressFill.style.width = `${Math.round(pct)}%`;
+}
+
+function rowStatus(answer) {
+  if (answer === "yes") return { label: "Complete", cls: "complete" };
+  if (answer === "partial") return { label: "In Progress", cls: "progress" };
+  if (answer === "not_sure") return { label: "Needs Validation", cls: "review" };
+  if (answer === "no") return { label: "Not Started", cls: "gap" };
+  return { label: "Pending", cls: "pending" };
+}
+
+function defaultLaneForQuestion(question) {
+  if (question.criticality === "high") return "first";
+  if (question.criticality === "medium") return "then";
+  return "later";
+}
+
+function getLaneForQuestion(question) {
+  const lane = getResponse(question.id).lane;
+  if (LANE_ORDER.includes(lane)) return lane;
+  return defaultLaneForQuestion(question);
+}
+
+function selectTask(questionId) {
+  state.selectedTaskId = questionId;
+  const question = state.questions.find((q) => q.id === questionId);
+  if (!question) return;
+
+  const response = getResponse(questionId);
+  el.detailTaskTitle.textContent = question.prompt;
+  el.detailStatus.value = response.answer || "";
+  el.detailNotes.value = response.comment || "";
+  el.charUsed.textContent = String((response.comment || "").length);
+  el.detailOwner.value = response.owner || "";
+  el.detailLane.value = getLaneForQuestion(question);
+
+  el.detailPanel.classList.remove("hidden");
+
+  document.querySelectorAll(".task-card.selected").forEach((card) => {
+    card.classList.remove("selected");
+  });
+  document.querySelector(`[data-task-id="${questionId}"]`)?.classList.add("selected");
+}
+
+function closeDetailPanel() {
+  state.selectedTaskId = null;
+  el.detailPanel.classList.add("hidden");
+  document.querySelectorAll(".task-card.selected").forEach((card) => {
+    card.classList.remove("selected");
+  });
+}
+
+function renderQuestions() {
+  el.boardRows.innerHTML = "";
+
+  const grouped = new Map();
+  state.questions.forEach((q) => {
+    const key = q.workload || "General";
+    if (!grouped.has(key)) grouped.set(key, []);
+    grouped.get(key).push(q);
+  });
+
+  grouped.forEach((questions, workload) => {
+    const total = questions.length;
+    const answered = questions.filter((q) => getResponse(q.id).answer).length;
+    const weightedEarned = questions.reduce((sum, q) => sum + scoreForQuestion(q, getResponse(q.id).answer), 0);
+    const weightedTotal = questions.reduce((sum, q) => sum + (Number(q.weight) || 1), 0);
+    const score = weightedTotal === 0 ? 0 : Math.round((weightedEarned / weightedTotal) * 100);
+
+    const row = document.createElement("section");
+    row.className = "board-row";
+
+    const areaCell = document.createElement("div");
+    areaCell.className = "board-area-cell";
+    areaCell.innerHTML = `
+      <h3>${workload}</h3>
+      <p>${answered}/${total} reviewed</p>
+      <span class="area-score">${score}%</span>
+    `;
+
+    const laneColumns = document.createElement("div");
+    laneColumns.className = "board-lanes";
+
+    LANE_ORDER.forEach((laneKey) => {
+      const lane = document.createElement("div");
+      lane.className = `board-lane ${laneKey}`;
+
+      const laneQuestions = questions.filter((q) => getLaneForQuestion(q) === laneKey);
+
+      if (laneQuestions.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "lane-empty";
+        empty.textContent = "No tasks";
+        lane.appendChild(empty);
+      } else {
+        laneQuestions.forEach((q) => {
+          const response = getResponse(q.id);
+          const status = rowStatus(response.answer);
+
+          const card = document.createElement("article");
+          card.className = "task-card";
+          card.innerHTML = `
+            <div class="card-badges">
+              <span class="task-badge id">${q.id}</span>
+              <span class="task-badge criticality ${q.criticality}">${q.criticality.toUpperCase()}</span>
+              <span class="task-badge weight">W${q.weight}</span>
+            </div>
+            <h4>${q.prompt}</h4>
+          `;
+
+          card.setAttribute("data-task-id", q.id);
+          card.addEventListener("click", () => {
+            selectTask(q.id);
+          });
+
+          lane.appendChild(card);
+        });
+      }
+
+      laneColumns.appendChild(lane);
+    });
+
+    row.appendChild(areaCell);
+    row.appendChild(laneColumns);
+    el.boardRows.appendChild(row);
+  });
+
+  updateProgress();
+}
+
+function scoreForQuestion(q, answerValue) {
+  if (!answerValue) return 0;
+  const answerScore = SCORE_MAP[answerValue] ?? 0;
+  return answerScore * (Number(q.weight) || 1);
+}
+
+function computeResults() {
+  const weightedEarned = state.questions.reduce((sum, q) => {
+    const response = getResponse(q.id);
+    return sum + scoreForQuestion(q, response.answer);
+  }, 0);
+
+  const weightedTotal = state.questions.reduce((sum, q) => sum + (Number(q.weight) || 1), 0);
+  const overallPct = weightedTotal === 0 ? 0 : (weightedEarned / weightedTotal) * 100;
+
+  const workloadMap = new Map();
+  state.questions.forEach((q) => {
+    const key = q.workload || "General";
+    if (!workloadMap.has(key)) workloadMap.set(key, { earned: 0, total: 0 });
+    const bucket = workloadMap.get(key);
+    const response = getResponse(q.id);
+    bucket.earned += scoreForQuestion(q, response.answer);
+    bucket.total += Number(q.weight) || 1;
+  });
+
+  const workloadScores = Array.from(workloadMap.entries()).map(([workload, v]) => ({
+    workload,
+    score: v.total === 0 ? 0 : Math.round((v.earned / v.total) * 100),
+  }));
+
+  const gaps = state.questions
+    .map((q) => {
+      const response = getResponse(q.id);
+      const answerScore = response.answer ? SCORE_MAP[response.answer] : 0;
+      return { q, response, answerScore };
+    })
+    .filter((x) => x.answerScore < 1)
+    .sort((a, b) => {
+      if (a.q.criticality !== b.q.criticality) {
+        return criticalityRank(b.q.criticality) - criticalityRank(a.q.criticality);
+      }
+      return b.q.weight - a.q.weight;
+    });
+
+  const highGapCount = gaps.filter((x) => x.q.criticality === "high").length;
+
+  return {
+    overallPct: Math.round(overallPct),
+    highGapCount,
+    answeredCount: getAnswerCount(),
+    topActions: gaps.slice(0, 6),
+    workloadScores,
+  };
+}
+
+function renderResults() {
+  const results = computeResults();
+
+  el.overallScore.textContent = `${results.overallPct}%`;
+  el.highGapCount.textContent = String(results.highGapCount);
+  el.answeredCount.textContent = `${results.answeredCount}/${state.questions.length}`;
+
+  if (results.overallPct >= 80) {
+    el.statusBadge.textContent = "Ready";
+    el.statusBadge.className = "status-badge green";
+  } else if (results.overallPct >= 60) {
+    el.statusBadge.textContent = "Caution";
+    el.statusBadge.className = "status-badge amber";
+  } else {
+    el.statusBadge.textContent = "Action Needed";
+    el.statusBadge.className = "status-badge red";
+  }
+
+  el.topActions.innerHTML = "";
+  results.topActions.forEach((item) => {
+    const li = document.createElement("li");
+    const ownerText = item.response.owner ? ` (owner: ${item.response.owner})` : "";
+    li.textContent = `${item.q.remediationHint}${ownerText}`;
+    el.topActions.appendChild(li);
+  });
+
+  el.workloadScores.innerHTML = "";
+  results.workloadScores
+    .sort((a, b) => b.score - a.score)
+    .forEach((entry) => {
+      const row = document.createElement("div");
+      row.className = "workload-row";
+      row.innerHTML = `<span>${entry.workload}</span><span>${entry.score}%</span>`;
+      el.workloadScores.appendChild(row);
+    });
+}
+
+function persistState() {
+  localStorage.setItem(
+    STORAGE_KEY,
+    JSON.stringify({
+      version: "2",
+      savedAt: new Date().toISOString(),
+      includeBacklog: Boolean(el.includeBacklogToggle?.checked),
+      collapsedWorkloads: state.collapsedWorkloads,
+      responses: state.responses,
+    })
+  );
+}
+
+function loadLocalState() {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (!raw) return false;
+
+  try {
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== "object") return false;
+
+    if (parsed.responses && typeof parsed.responses === "object") {
+      state.responses = parsed.responses;
+    }
+
+    if (parsed.collapsedWorkloads && typeof parsed.collapsedWorkloads === "object") {
+      state.collapsedWorkloads = parsed.collapsedWorkloads;
+    }
+
+    if (typeof parsed.includeBacklog === "boolean" && el.includeBacklogToggle) {
+      el.includeBacklogToggle.checked = parsed.includeBacklog;
+    }
+
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function loadQuestionBanks() {
+  const baseRes = await fetch("data/questions.v1.json");
+  if (!baseRes.ok) throw new Error("Unable to load base question bank.");
+
+  const baseBank = await baseRes.json();
+  state.questionBanks.core = Array.isArray(baseBank.questions) ? baseBank.questions : [];
+
+  try {
+    const backlogRes = await fetch("data/questions.backlog.v2.json", { cache: "no-store" });
+    if (backlogRes.ok) {
+      const backlogBank = await backlogRes.json();
+      if (Array.isArray(backlogBank.questions)) {
+        state.questionBanks.backlog = backlogBank.questions;
+      }
+    }
+  } catch {
+    // Optional backlog load.
+  }
+
+  try {
+    const privateRes = await fetch("data/questions.private.json", { cache: "no-store" });
+    if (privateRes.ok) {
+      const privateBank = await privateRes.json();
+      if (Array.isArray(privateBank.questions) && privateBank.questions.length > 0) {
+        state.questionBanks.core = state.questionBanks.core.concat(privateBank.questions);
+      }
+    }
+  } catch {
+    // Optional private overlay load.
+  }
+}
+
+function refreshTracker() {
+  setQuestionSet(Boolean(el.includeBacklogToggle?.checked));
+  renderQuestions();
+  renderResults();
+}
+
+function downloadSnapshot() {
+  const payload = {
+    exportVersion: "0.2",
+    exportedAt: new Date().toISOString(),
+    includeBacklog: Boolean(el.includeBacklogToggle?.checked),
+    responses: state.responses,
+    results: computeResults(),
+  };
+
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = "copilot-readiness-tracker-snapshot.json";
+  anchor.click();
+  URL.revokeObjectURL(url);
+}
+
+function importSnapshot(file) {
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const parsed = JSON.parse(String(reader.result));
+      if (!parsed.responses || typeof parsed.responses !== "object") {
+        throw new Error("Invalid snapshot format.");
+      }
+      state.responses = parsed.responses;
+      if (typeof parsed.includeBacklog === "boolean" && el.includeBacklogToggle) {
+        el.includeBacklogToggle.checked = parsed.includeBacklog;
+      }
+      refreshTracker();
+      persistState();
+    } catch {
+      window.alert("Could not import JSON snapshot.");
+    }
+  };
+  reader.readAsText(file);
+}
+
+function wireEvents() {
+  el.startBtn.addEventListener("click", () => {
+    refreshTracker();
+    persistState();
+  });
+
+  el.includeBacklogToggle?.addEventListener("change", () => {
+    refreshTracker();
+    persistState();
+  });
+
+  el.loadLocalBtn.addEventListener("click", () => {
+    const loaded = loadLocalState();
+    if (loaded) {
+      refreshTracker();
+    } else {
+      window.alert("No local tracker state found.");
+    }
+  });
+
+  el.saveProgressBtn.addEventListener("click", () => {
+    persistState();
+    window.alert("Tracker saved locally.");
+  });
+
+  el.reviewResultsBtn.addEventListener("click", () => {
+    renderResults();
+  });
+
+  el.downloadJsonBtn.addEventListener("click", downloadSnapshot);
+
+  el.importFile.addEventListener("change", (event) => {
+    const target = event.target;
+    if (target.files && target.files[0]) {
+      importSnapshot(target.files[0]);
+      target.value = "";
+    }
+  });
+
+  el.detailCloseBtn.addEventListener("click", closeDetailPanel);
+
+  el.detailStatus.addEventListener("change", () => {
+    if (state.selectedTaskId) {
+      getResponse(state.selectedTaskId).answer = el.detailStatus.value;
+      persistState();
+      updateProgress();
+      renderResults();
+      renderQuestions();
+      selectTask(state.selectedTaskId);
+    }
+  });
+
+  el.detailNotes.addEventListener("input", () => {
+    if (state.selectedTaskId) {
+      const val = el.detailNotes.value.slice(0, 1000);
+      el.detailNotes.value = val;
+      el.charUsed.textContent = String(val.length);
+      getResponse(state.selectedTaskId).comment = val;
+      persistState();
+    }
+  });
+
+  el.detailOwner.addEventListener("input", () => {
+    if (state.selectedTaskId) {
+      getResponse(state.selectedTaskId).owner = el.detailOwner.value;
+      persistState();
+    }
+  });
+
+  el.detailLane.addEventListener("change", () => {
+    if (state.selectedTaskId) {
+      getResponse(state.selectedTaskId).lane = el.detailLane.value;
+      persistState();
+      renderQuestions();
+      selectTask(state.selectedTaskId);
+    }
+  });
+}
+
+
+async function init() {
+  await loadQuestionBanks();
+  loadLocalState();
+  refreshTracker();
+  wireEvents();
+}
+
+init().catch(() => {
+  window.alert("Failed to initialize tracker. Check data files.");
+});
