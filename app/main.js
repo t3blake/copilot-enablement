@@ -1,4 +1,3 @@
-const STORAGE_KEY = "copilot-enable-hub.tracker.v2";
 const SCORE_MAP = { yes: 1, partial: 0.5, not_sure: 0.25, no: 0 };
 const LANE_ORDER = ["first", "then", "later"];
 
@@ -16,9 +15,7 @@ const state = {
 const el = {
   assessmentView: document.getElementById("assessment-view"),
   startBtn: document.getElementById("start-btn"),
-  loadLocalBtn: document.getElementById("load-local-btn"),
   includeBacklogToggle: document.getElementById("include-backlog-toggle"),
-  saveProgressBtn: document.getElementById("save-progress-btn"),
   reviewResultsBtn: document.getElementById("review-results-btn"),
   boardRows: document.getElementById("board-rows"),
   progressLabel: document.getElementById("progress-label"),
@@ -423,44 +420,7 @@ function renderResults() {
     });
 }
 
-function persistState() {
-  localStorage.setItem(
-    STORAGE_KEY,
-    JSON.stringify({
-      version: "2",
-      savedAt: new Date().toISOString(),
-      includeBacklog: Boolean(el.includeBacklogToggle?.checked),
-      collapsedWorkloads: state.collapsedWorkloads,
-      responses: state.responses,
-    })
-  );
-}
 
-function loadLocalState() {
-  const raw = localStorage.getItem(STORAGE_KEY);
-  if (!raw) return false;
-
-  try {
-    const parsed = JSON.parse(raw);
-    if (!parsed || typeof parsed !== "object") return false;
-
-    if (parsed.responses && typeof parsed.responses === "object") {
-      state.responses = parsed.responses;
-    }
-
-    if (parsed.collapsedWorkloads && typeof parsed.collapsedWorkloads === "object") {
-      state.collapsedWorkloads = parsed.collapsedWorkloads;
-    }
-
-    if (typeof parsed.includeBacklog === "boolean" && el.includeBacklogToggle) {
-      el.includeBacklogToggle.checked = parsed.includeBacklog;
-    }
-
-    return true;
-  } catch {
-    return false;
-  }
-}
 
 async function loadQuestionBanks() {
   const baseRes = await fetch("data/questions.v1.json");
@@ -532,7 +492,6 @@ function importSnapshot(file) {
         el.includeBacklogToggle.checked = parsed.includeBacklog;
       }
       refreshTracker();
-      persistState();
     } catch {
       window.alert("Could not import JSON snapshot.");
     }
@@ -543,27 +502,13 @@ function importSnapshot(file) {
 function wireEvents() {
   el.startBtn.addEventListener("click", () => {
     refreshTracker();
-    persistState();
   });
 
   el.includeBacklogToggle?.addEventListener("change", () => {
     refreshTracker();
-    persistState();
   });
 
-  el.loadLocalBtn.addEventListener("click", () => {
-    const loaded = loadLocalState();
-    if (loaded) {
-      refreshTracker();
-    } else {
-      window.alert("No local tracker state found.");
-    }
-  });
 
-  el.saveProgressBtn.addEventListener("click", () => {
-    persistState();
-    window.alert("Tracker saved locally.");
-  });
 
   el.reviewResultsBtn.addEventListener("click", () => {
     renderResults();
@@ -597,7 +542,6 @@ function wireEvents() {
   el.detailStatus.addEventListener("change", () => {
     if (state.selectedTaskId) {
       getResponse(state.selectedTaskId).answer = el.detailStatus.value;
-      persistState();
       updateProgress();
       renderResults();
       renderQuestions();
@@ -611,7 +555,6 @@ function wireEvents() {
       el.detailNotes.value = val;
       el.charUsed.textContent = String(val.length);
       getResponse(state.selectedTaskId).comment = val;
-      persistState();
     }
   });
 
@@ -620,7 +563,6 @@ function wireEvents() {
       getResponse(state.selectedTaskId).owner = el.detailOwner.value.trim();
       renderOwnerSuggestions();
       el.savedOwnerSelect.value = "";
-      persistState();
     }
   });
 
@@ -629,14 +571,12 @@ function wireEvents() {
       el.detailOwner.value = el.savedOwnerSelect.value;
       getResponse(state.selectedTaskId).owner = el.savedOwnerSelect.value;
       renderOwnerSuggestions();
-      persistState();
     }
   });
 
   el.detailLane.addEventListener("change", () => {
     if (state.selectedTaskId) {
       getResponse(state.selectedTaskId).lane = el.detailLane.value;
-      persistState();
       renderQuestions();
       selectTask(state.selectedTaskId);
     }
@@ -646,7 +586,6 @@ function wireEvents() {
 
 async function init() {
   await loadQuestionBanks();
-  loadLocalState();
   refreshTracker();
   wireEvents();
 }
