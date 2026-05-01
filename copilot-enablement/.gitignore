@@ -1,0 +1,10 @@
+# Local-only data overlays
+app/data/questions.private.json
+
+# Local exports/snapshots
+app/data/*.local.json
+*.snapshot.json
+
+# OS/editor
+.DS_Store
+Thumbs.db
