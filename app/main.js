@@ -15,7 +15,6 @@ const state = {
 
 const el = {
   assessmentView: document.getElementById("assessment-view"),
-  resultsView: document.getElementById("results-view"),
   startBtn: document.getElementById("start-btn"),
   loadLocalBtn: document.getElementById("load-local-btn"),
   includeBacklogToggle: document.getElementById("include-backlog-toggle"),
@@ -39,8 +38,26 @@ const el = {
   detailNotes: document.getElementById("detail-notes"),
   charUsed: document.getElementById("char-used"),
   detailOwner: document.getElementById("detail-owner"),
+  savedOwnerSelect: document.getElementById("saved-owner-select"),
+  ownerSuggestions: document.getElementById("owner-suggestions"),
   detailLane: document.getElementById("detail-lane"),
+  summaryTabTracker: document.getElementById("summary-tab-tracker"),
+  summaryTabScorecard: document.getElementById("summary-tab-scorecard"),
+  summaryPaneTracker: document.getElementById("summary-pane-tracker"),
+  summaryPaneScorecard: document.getElementById("summary-pane-scorecard"),
 };
+
+function setSummaryTab(tabKey) {
+  const trackerActive = tabKey === "tracker";
+
+  el.summaryTabTracker?.classList.toggle("active", trackerActive);
+  el.summaryTabScorecard?.classList.toggle("active", !trackerActive);
+  el.summaryTabTracker?.setAttribute("aria-selected", String(trackerActive));
+  el.summaryTabScorecard?.setAttribute("aria-selected", String(!trackerActive));
+
+  el.summaryPaneTracker?.classList.toggle("hidden", !trackerActive);
+  el.summaryPaneScorecard?.classList.toggle("hidden", trackerActive);
+}
 
 function criticalityRank(value) {
   if (value === "high") return 3;
@@ -109,6 +126,36 @@ function getAnswerCount() {
   return state.questions.filter((q) => getResponse(q.id).answer).length;
 }
 
+function getKnownOwners() {
+  return Array.from(
+    new Set(
+      Object.values(state.responses)
+        .map((response) => String(response?.owner || "").trim())
+        .filter(Boolean)
+    )
+  ).sort((left, right) => left.localeCompare(right));
+}
+
+function renderOwnerSuggestions() {
+  if (!el.ownerSuggestions || !el.savedOwnerSelect) return;
+
+  const owners = getKnownOwners();
+  el.ownerSuggestions.innerHTML = "";
+  owners.forEach((owner) => {
+    const option = document.createElement("option");
+    option.value = owner;
+    el.ownerSuggestions.appendChild(option);
+  });
+
+  el.savedOwnerSelect.innerHTML = '<option value="">Saved owners</option>';
+  owners.forEach((owner) => {
+    const option = document.createElement("option");
+    option.value = owner;
+    option.textContent = owner;
+    el.savedOwnerSelect.appendChild(option);
+  });
+}
+
 function updateProgress() {
   const answered = getAnswerCount();
   const total = state.questions.length;
@@ -143,6 +190,7 @@ function selectTask(questionId) {
   if (!question) return;
 
   const response = getResponse(questionId);
+  renderOwnerSuggestions();
   el.detailTaskTitle.textContent = question.prompt;
   el.detailStatus.value = response.answer || "";
   el.detailNotes.value = response.comment || "";
@@ -151,16 +199,21 @@ function selectTask(questionId) {
   el.detailLane.value = getLaneForQuestion(question);
 
   el.detailPanel.classList.remove("hidden");
+  el.detailPanel.setAttribute("aria-hidden", "false");
+  document.body.classList.add("detail-panel-open");
 
   document.querySelectorAll(".task-card.selected").forEach((card) => {
     card.classList.remove("selected");
   });
   document.querySelector(`[data-task-id="${questionId}"]`)?.classList.add("selected");
+  el.detailStatus.focus();
 }
 
 function closeDetailPanel() {
   state.selectedTaskId = null;
   el.detailPanel.classList.add("hidden");
+  el.detailPanel.setAttribute("aria-hidden", "true");
+  document.body.classList.remove("detail-panel-open");
   document.querySelectorAll(".task-card.selected").forEach((card) => {
     card.classList.remove("selected");
   });
@@ -309,6 +362,10 @@ function computeResults() {
 
 function renderResults() {
   const results = computeResults();
+  const compactActionText = (text, maxLength = 100) => {
+    if (text.length <= maxLength) return text;
+    return `${text.slice(0, maxLength - 1)}...`;
+  };
 
   el.overallScore.textContent = `${results.overallPct}%`;
   el.highGapCount.textContent = String(results.highGapCount);
@@ -347,8 +404,11 @@ function renderResults() {
   el.topActions.innerHTML = "";
   results.topActions.forEach((item) => {
     const li = document.createElement("li");
+    li.className = "top-action-item";
     const ownerText = item.response.owner ? ` (owner: ${item.response.owner})` : "";
-    li.textContent = `${item.q.remediationHint}${ownerText}`;
+    const fullText = `${item.q.remediationHint}${ownerText}`;
+    li.textContent = compactActionText(fullText);
+    li.title = fullText;
     el.topActions.appendChild(li);
   });
 
@@ -358,7 +418,7 @@ function renderResults() {
     .forEach((entry) => {
       const row = document.createElement("div");
       row.className = "workload-row";
-      row.innerHTML = `<span>${entry.workload}</span><span>${entry.score}%</span>`;
+      row.innerHTML = `<span class="workload-name">${entry.workload}</span><span class="workload-score">${entry.score}%</span>`;
       el.workloadScores.appendChild(row);
     });
 }
@@ -436,6 +496,7 @@ async function loadQuestionBanks() {
 
 function refreshTracker() {
   setQuestionSet(Boolean(el.includeBacklogToggle?.checked));
+  renderOwnerSuggestions();
   renderQuestions();
   renderResults();
 }
@@ -508,6 +569,14 @@ function wireEvents() {
     renderResults();
   });
 
+  el.summaryTabTracker?.addEventListener("click", () => {
+    setSummaryTab("tracker");
+  });
+
+  el.summaryTabScorecard?.addEventListener("click", () => {
+    setSummaryTab("scorecard");
+  });
+
   el.downloadJsonBtn.addEventListener("click", downloadSnapshot);
 
   el.importFile.addEventListener("change", (event) => {
@@ -519,6 +588,11 @@ function wireEvents() {
   });
 
   el.detailCloseBtn.addEventListener("click", closeDetailPanel);
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && state.selectedTaskId) {
+      closeDetailPanel();
+    }
+  });
 
   el.detailStatus.addEventListener("change", () => {
     if (state.selectedTaskId) {
@@ -543,7 +617,18 @@ function wireEvents() {
 
   el.detailOwner.addEventListener("input", () => {
     if (state.selectedTaskId) {
-      getResponse(state.selectedTaskId).owner = el.detailOwner.value;
+      getResponse(state.selectedTaskId).owner = el.detailOwner.value.trim();
+      renderOwnerSuggestions();
+      el.savedOwnerSelect.value = "";
+      persistState();
+    }
+  });
+
+  el.savedOwnerSelect?.addEventListener("change", () => {
+    if (state.selectedTaskId && el.savedOwnerSelect.value) {
+      el.detailOwner.value = el.savedOwnerSelect.value;
+      getResponse(state.selectedTaskId).owner = el.savedOwnerSelect.value;
+      renderOwnerSuggestions();
       persistState();
     }
   });

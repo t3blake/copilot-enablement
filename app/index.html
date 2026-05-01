@@ -37,25 +37,47 @@
         </section>
 
         <section id="assessment-view" class="view visible">
-          <div class="summary-row">
-            <div class="summary-cell">
-              <div id="status-badge" class="status-badge">Pending</div>
-              <p id="progress-label">0/0 answered</p>
-              <div class="progress-bar"><div id="progress-fill"></div></div>
+          <section class="summary-hub">
+            <div class="summary-tabs" role="tablist" aria-label="Summary views">
+              <button id="summary-tab-tracker" class="summary-tab active" role="tab" aria-selected="true" aria-controls="summary-pane-tracker" type="button">Tracker</button>
+              <button id="summary-tab-scorecard" class="summary-tab" role="tab" aria-selected="false" aria-controls="summary-pane-scorecard" type="button">Detailed Scorecard</button>
             </div>
-            <div class="summary-cell small">
-              <p class="summary-label">Overall</p>
-              <p id="overall-score" class="metric-value">0%</p>
+
+            <div id="summary-pane-tracker" class="summary-pane" role="tabpanel" aria-labelledby="summary-tab-tracker">
+              <div class="summary-row compact">
+                <div class="summary-cell emphasis">
+                  <div id="status-badge" class="status-badge">Pending</div>
+                  <p id="progress-label">0/0 answered</p>
+                  <div class="progress-bar"><div id="progress-fill"></div></div>
+                </div>
+                <div class="summary-cell mini">
+                  <p class="summary-label">Overall</p>
+                  <p id="overall-score" class="metric-value">0%</p>
+                </div>
+                <div class="summary-cell mini">
+                  <p class="summary-label">High Gaps</p>
+                  <p id="high-gap-count" class="metric-value">0</p>
+                </div>
+                <div class="summary-cell mini">
+                  <p class="summary-label">Completed</p>
+                  <p id="answered-count" class="metric-value">0</p>
+                </div>
+              </div>
             </div>
-            <div class="summary-cell small">
-              <p class="summary-label">High Gaps</p>
-              <p id="high-gap-count" class="metric-value">0</p>
+
+            <div id="summary-pane-scorecard" class="summary-pane hidden" role="tabpanel" aria-labelledby="summary-tab-scorecard">
+              <div class="scorecard-grid">
+                <section class="scorecard-card">
+                  <h3>Top Recommended Actions</h3>
+                  <ol id="top-actions" class="top-actions"></ol>
+                </section>
+                <section class="scorecard-card">
+                  <h3>Score by Workload</h3>
+                  <div id="workload-scores" class="workload-scores"></div>
+                </section>
+              </div>
             </div>
-            <div class="summary-cell small">
-              <p class="summary-label">Completed</p>
-              <p id="answered-count" class="metric-value">0</p>
-            </div>
-          </div>
+          </section>
 
           <div class="tracker-board-wrap">
             <div class="lane-header-row">
@@ -68,7 +90,7 @@
           </div>
         </section>
 
-        <section id="detail-panel" class="detail-panel hidden">
+        <section id="detail-panel" class="detail-panel hidden" aria-hidden="true">
           <div class="detail-header">
             <h3 id="detail-task-title">Selected Task</h3>
             <button id="detail-close-btn" class="detail-close" aria-label="Close detail panel">×</button>
@@ -92,7 +114,13 @@
             </div>
             <div class="detail-row meta-row">
               <label for="detail-owner">Owner:</label>
-              <input type="text" id="detail-owner" class="detail-input" placeholder="Assign owner">
+              <div class="owner-field-group">
+                <input type="text" id="detail-owner" class="detail-input" list="owner-suggestions" placeholder="Assign owner">
+                <select id="saved-owner-select" class="detail-select saved-owner-select" aria-label="Saved owners">
+                  <option value="">Saved owners</option>
+                </select>
+                <datalist id="owner-suggestions"></datalist>
+              </div>
             </div>
             <div class="detail-row lane-row">
               <label for="detail-lane">Lane:</label>
@@ -105,17 +133,6 @@
           </div>
         </section>
 
-        <section id="results-view" class="view visible results-panel">
-          <h2>Tracker Summary</h2>
-          <section>
-            <h3>Top Recommended Actions</h3>
-            <ol id="top-actions" class="top-actions"></ol>
-          </section>
-          <section>
-            <h3>Score by Workload</h3>
-            <div id="workload-scores" class="workload-scores"></div>
-          </section>
-        </section>
     </main>
 
     <script type="module" src="main.js"></script>
