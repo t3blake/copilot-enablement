@@ -14,10 +14,11 @@ while linking to deeper official guidance when needed.
 
 ## What It Does
 
-1. **Track questions in a status grid** (domain, answer, status, comment, owner) across Copilot-relevant workloads
-2. **Get a readiness score** with visual traffic-light status (green = ready, yellow = caution, red = action needed)
-3. **Download and re-import your results** as JSON snapshots for workshop follow-up or handoff
-4. **Review a curated core baseline or optional deeper backlog** without leaving the app
+1. **Track progress across 47 Copilot-readiness controls** in a visual grid organized by workload and execution lane
+2. **Assign status to each item** (Not Started, In Progress, Completed, Blocked, etc.) and track progression from planning to completion
+3. **See real-time scoring** showing overall readiness and per-workload progress based on your status selections
+4. **Download JSON snapshots** to save/share progress and re-import them later to continue or compare over time
+5. **Optionally include a deeper backlog** of 25 additional questions for extended assessment
 
 ## Scope Guardrail
 
@@ -29,7 +30,8 @@ while linking to deeper official guidance when needed.
 ✅ **Free & public** — no login, no vendor lock-in, no telemetry  
 ✅ **Static and portable** — runs as a simple client-side web app  
 ✅ **Copilot-focused** — best practices specifically for M365 Copilot adoption  
-✅ **Visual & engaging** — inspired by [zerotrust.microsoft.com](https://zerotrust.microsoft.com)  
+✅ **Status-driven tracking** — progress-aware scoring that reflects execution lifecycle (planning → implementation → completion)  
+✅ **Shareable** — JSON snapshots make it easy to save progress and handoff across teams  
 ✅ **Accessible** — plain language, no jargon  
 
 ## Status
@@ -45,10 +47,11 @@ npx serve app -l 8080
 
 Then open http://localhost:8080/
 
-Usage note:
-- By default, the app loads the scored core baseline question set.
-- To include deeper workshop questions, enable "Include expanded draft backlog questions" before starting the assessment.
-- The expanded backlog is intentionally narrower than before: questions promoted into the curated core baseline were removed from backlog mode to avoid double-scoring the same control.
+Usage notes:
+- By default, the app loads the 22-question core baseline focused on the most critical Copilot prerequisites.
+- To include an additional 25 backlog questions for deeper assessment, use the import feature to load one of the sample snapshots (`sample-pilot.json` or `sample-optimizing.json`) or import your own prior snapshot.
+- All status changes and notes are saved in browser memory. Download a JSON snapshot to persist progress.
+- Scoring is unweighted and progress-aware: items marked `Completed` or higher-progress statuses contribute more to overall readiness % than `Not Started` items.
 
 ## Project Structure
 

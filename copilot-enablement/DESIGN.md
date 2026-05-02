@@ -167,15 +167,16 @@ typical deployment, with links out to deeper workload-specific guidance where ne
 
 #### **B. Readiness Dashboard**
 After assessment, display:
-- **Overall score** (0–100%) by workload
-- **Traffic-light status** (green = ready, yellow = caution, red = needs action)
-- **Per-item checklist** with completion % and explanations
-- **Summary findings** (e.g., "3 critical gaps found in Purview setup")
+- **Overall score** (0–100%) based on progress across all questions
+- **Traffic-light status** (green = ready, yellow = caution, red = action needed) by workload
+- **Per-item tracking** with status and owner assignment
+- **Summary findings** (e.g., "5 items in progress, 2 blocked, 14 not started")
+- **High-gap prioritization** by criticality (high-criticality items with incomplete status rank highest)
 
 #### **C. Export & Reporting**
-- Download assessment result as **JSON** (structured data for tracking)
-- Download as **formatted HTML report** (shareable with stakeholders)
-- Include recommendations for next steps
+- Download assessment result as **JSON snapshot** (structured data for sharing and tracking over time)
+- Re-import snapshots to compare progress or continue work across sessions
+- Clear/reset all answers to start fresh
 
 #### **D. Best-Practice Guidance**
 Embedded in the assessment — each section includes:
@@ -276,22 +277,17 @@ Embedded in the assessment — each section includes:
 ### **User Flow**
 
 ```
-1. Visit app → See intro + "Start Assessment" button
-2. Answer questionnaire (~5–10 min)
-   - Questions grouped by workload (tabs or steps)
-   - Yes/No/Partial/Unknown responses
-   - Inline guidance for each question
-3. Submit → Readiness dashboard displayed
-   - Overall score
-   - Per-workload breakdown
-   - Traffic-light status for each item
-4. Explore results
-   - Click each item for detailed explanation
-   - "How to fix" links to admin portals
-5. Download report
-   - JSON snapshot for record-keeping
-   - HTML report for stakeholders
-6. (Optional) Upload previous snapshot to compare progress
+1. Visit app → See tracker grid across workloads
+2. Click a question card to open the detail panel
+3. Set the status for that question:
+   - Not Reviewed (default)
+   - Not Started, In Planning, Planned, In Progress, Completed
+   - Blocked, First Party Other, Third Party, Will Not Pursue
+   - MS Roadmap, Follow Up, Not Applicable
+4. Optionally add notes and assign an owner
+5. Return to grid to see progress update in real time
+6. Export current progress as JSON snapshot
+7. Import previous snapshot to resume or compare over time
 ```
 
 ---
@@ -355,42 +351,47 @@ Initial out-of-scope examples (unless required by a target customer profile):
 
 ### **Question Bank v0.1 (Mapped to Control Catalog)**
 
-Response model for all questions:
-- `Yes` = fully implemented and validated
-- `Partial` = implemented for some users/workloads only
-- `No` = not implemented
-- `Not sure` = unknown current state
+Status model for all questions:
+- `not_reviewed` = status not yet set (default, score = 0, not counted as answered)
+- `not_started` = identified but no action begun (score = 0)
+- `in_planning` = work scheduled or in assessment phase (score = 0.2)
+- `planned` = decision made, implementation roadmap clear (score = 0.35)
+- `in_progress` = active implementation underway (score = 0.6)
+- `completed` = fully implemented and validated (score = 1.0)
+- `blocked` = work blocked by external dependency (score = 0.15)
+- `first_party_other` = implemented via Microsoft product evolution (score = 0.5)
+- `third_party` = implemented via third-party solution (score = 0.5)
+- `will_not_pursue` = intentionally deferred or out of scope (score = 0)
+- `ms_roadmap` = planned in Microsoft roadmap, awaiting release (score = 0.45)
+- `follow_up` = identified for future phase (score = 0.25)
+- `not_applicable` = does not apply to this organization (score = 0, excluded from denominator)
 
-Initial scoring model (simple and explainable):
-- `Yes` = 1.0
-- `Partial` = 0.5
-- `Not sure` = 0.25
-- `No` = 0.0
-
-Weighted score formula:
+Scoring model (unweighted, progress-aware):
 
 $$
-	ext{overall} = \frac{\sum(\text{answerScore} \times \text{weight})}{\sum(\text{weight})}
+\text{overall} = \frac{\sum(\text{statusScore}) }{\text{count of applicable questions}}
 $$
 
-| QID | Control ID | Assessment question | Weight | Criticality | Fail-state guidance |
-|---|---|---|---:|---|---|
-| Q-001 | CPL-001 | Do all intended Copilot users have eligible base licenses plus Microsoft 365 Copilot add-on assigned? | 10 | High | Identify unlicensed users, confirm eligible base SKUs, and assign Copilot add-on before pilot expansion. |
-| Q-002 | CPL-002 | Do intended Copilot users have Entra accounts and primary mailboxes hosted in Exchange Online? | 10 | High | Migrate mailbox dependencies and resolve identity gaps before production rollout. |
-| Q-003 | CPL-003 | Are Microsoft 365 Apps deployed and running supported channels (Current or Monthly Enterprise) for Copilot users? | 9 | High | Standardize update channel policy and update app builds for pilot ring devices first. |
-| Q-004 | CPL-004 | Does your network allow required Microsoft 365 endpoints and full WSS connectivity for Copilot experiences? | 9 | High | Remove blocking/proxy/TLS inspection constraints for required endpoints and retest core app scenarios. |
-| Q-005 | CPL-005 | Is the Office Feature Updates task allowed to run on schedule for Copilot-enabled devices? | 8 | High | Re-enable scheduled task and confirm endpoint policy does not suppress required update behavior. |
-| Q-006 | CPL-006 | Is MFA enforced for all users and all admin accounts in Copilot scope? | 10 | High | Enforce MFA baseline and remove exceptions that bypass strong auth for in-scope users. |
-| Q-007 | CPL-007 | Are baseline Conditional Access controls active, including blocking legacy authentication? | 10 | High | Roll out baseline CA policies with staged testing, then enforce tenant-wide for Copilot scope. |
-| Q-008 | CPL-008 | Have you applied oversharing controls (for example restricted search/access review/restricted discovery) for high-risk content locations? | 10 | High | Apply interim oversharing controls on high-risk sites before expanding Copilot license assignment. |
-| Q-009 | CPL-009 | Is an external sharing baseline defined and enforced for SharePoint and OneDrive? | 9 | High | Tighten external sharing defaults, align link policies, and review guest collaboration settings. |
-| Q-010 | CPL-010 | Are Purview sensitivity labels defined, published, and enabled for SharePoint and OneDrive files? | 10 | High | Publish baseline label taxonomy and validate label application in priority collaboration locations. |
-| Q-011 | CPL-011 | Are Purview DLP baseline policies active for core data locations (email, OneDrive, SharePoint, Teams where applicable)? | 9 | High | Deploy baseline DLP policies in monitor mode first, then move to enforce with clear owner workflows. |
-| Q-012 | CPL-012 | Is unified audit logging enabled with retention aligned to compliance needs? | 8 | High | Enable audit logging, define retention period, and establish recurring review ownership. |
-| Q-013 | CPL-013 | For Teams scenarios that need post-meeting Copilot context, are transcription/recording policies configured appropriately? | 6 | Medium | Configure meeting policies for targeted groups and communicate recording/transcription expectations. |
-| Q-014 | CPL-014 | If Loop/Whiteboard Copilot scenarios are in scope, are those tenant settings enabled and validated? | 5 | Medium | Enable required app settings only for in-scope scenarios and validate with pilot users. |
-| Q-015 | CPL-015 | Is there a defined pilot ring with champions across business functions before broad deployment? | 6 | Medium | Build a cross-functional pilot cohort, assign licenses, and capture structured feedback before scale-out. |
-| Q-016 | CPL-016 | Do you have user enablement assets and a communication plan for launch and post-launch support? | 5 | Medium | Prepare role-based onboarding content and rollout communications before expanding licenses. |
+Where "applicable" excludes items marked `not_applicable`. This ensures orgs can opt out of irrelevant controls without penalty.
+
+| QID | Control ID | Assessment question | Criticality | Fail-state guidance |
+|---|---|---|---|---|
+| Q-001 | CPL-001 | Do all intended Copilot users have eligible base licenses plus Microsoft 365 Copilot add-on assigned? | High | Identify unlicensed users, confirm eligible base SKUs, and assign Copilot add-on before pilot expansion. |
+| Q-002 | CPL-002 | Do intended Copilot users have Entra accounts and primary mailboxes hosted in Exchange Online? | High | Migrate mailbox dependencies and resolve identity gaps before production rollout. |
+| Q-003 | CPL-003 | Are Microsoft 365 Apps deployed and running supported channels (Current or Monthly Enterprise) for Copilot users? | High | Standardize update channel policy and update app builds for pilot ring devices first. |
+| Q-004 | CPL-004 | Does your network allow required Microsoft 365 endpoints and full WSS connectivity for Copilot experiences? | High | Remove blocking/proxy/TLS inspection constraints for required endpoints and retest core app scenarios. |
+| Q-005 | CPL-005 | Is the Office Feature Updates task allowed to run on schedule for Copilot-enabled devices? | High | Re-enable scheduled task and confirm endpoint policy does not suppress required update behavior. |
+| Q-006 | CPL-006 | Is MFA enforced for all users and all admin accounts in Copilot scope? | High | Enforce MFA baseline and remove exceptions that bypass strong auth for in-scope users. |
+| Q-007 | CPL-007 | Are baseline Conditional Access controls active, including blocking legacy authentication? | High | Roll out baseline CA policies with staged testing, then enforce tenant-wide for Copilot scope. |
+| Q-008 | CPL-008 | Have you applied oversharing controls (e.g., restricted search, access review, restricted discovery) for high-risk content locations? | High | Apply interim oversharing controls on high-risk sites before expanding Copilot license assignment. |
+| Q-009 | CPL-009 | Is an external sharing baseline defined and enforced for SharePoint and OneDrive? | High | Tighten external sharing defaults, align link policies, and review guest collaboration settings. |
+| Q-010 | CPL-010 | Are Purview sensitivity labels defined, published, and enabled for SharePoint and OneDrive files? | High | Publish baseline label taxonomy and validate label application in priority collaboration locations. |
+| Q-011 | CPL-011 | Are Purview DLP baseline policies active for core data locations (email, OneDrive, SharePoint, Teams where applicable)? | High | Deploy baseline DLP policies in monitor mode first, then move to enforce with clear owner workflows. |
+| Q-012 | CPL-012 | Is unified audit logging enabled with retention aligned to compliance needs? | High | Enable audit logging, define retention period, and establish recurring review ownership. |
+| Q-013 | CPL-013 | For Teams scenarios that need post-meeting Copilot context, are transcription/recording policies configured appropriately? | Medium | Configure meeting policies for targeted groups and communicate recording/transcription expectations. |
+| Q-014 | CPL-014 | If Loop/Whiteboard Copilot scenarios are in scope, are those tenant settings enabled and validated? | Medium | Enable required app settings only for in-scope scenarios and validate with pilot users. |
+| Q-015 | CPL-015 | Is there a defined pilot ring with champions across business functions before broad deployment? | Medium | Build a cross-functional pilot cohort, assign licenses, and capture structured feedback before scale-out. |
+| Q-016 | CPL-016 | Do you have user enablement assets and a communication plan for launch and post-launch support? | Medium | Prepare role-based onboarding content and rollout communications before expanding licenses. |
 
 ### **Question Authoring Template (for scale-out to 50+)**
 
@@ -399,15 +400,15 @@ Each question should be stored with:
 - `controlId`
 - `workload`
 - `prompt`
-- `criticality`
-- `weight`
+- `criticality` (high, medium, low)
+- `lane` (first, then, later) — deployment sequencing
 - `copilotDependency`
-- `whyItMatters`
-- `howToValidate`
 - `remediationHint`
 - `sourceUrl`
 - `sourceType`
 - `lastReviewed`
+
+Note: The `weight` field has been removed. All questions contribute equally to the overall score based on their status, independent of any priority weighting.
 
 ### **Question Intake Backlog (from Security Workshops)**
 
