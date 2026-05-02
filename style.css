@@ -536,12 +536,6 @@ body.detail-panel-open {
   background: #eff7ff;
 }
 
-.task-badge.weight {
-  border-color: #cfd6de;
-  background: #f4f5f7;
-  color: #4e5968;
-}
-
 .task-badge.criticality.high {
   border-color: #efb5b7;
   color: #b32f34;
