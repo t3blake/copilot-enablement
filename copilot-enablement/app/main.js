@@ -1,4 +1,18 @@
-const SCORE_MAP = { yes: 1, partial: 0.5, not_sure: 0.25, no: 0 };
+const STATUS_META = {
+  not_reviewed: { label: "Not Reviewed", score: 0, countsAsAnswered: false, applicable: true },
+  not_started: { label: "Not Started", score: 0, countsAsAnswered: true, applicable: true },
+  in_planning: { label: "In Planning", score: 0.2, countsAsAnswered: true, applicable: true },
+  planned: { label: "Planned", score: 0.35, countsAsAnswered: true, applicable: true },
+  in_progress: { label: "In Progress", score: 0.6, countsAsAnswered: true, applicable: true },
+  completed: { label: "Completed", score: 1, countsAsAnswered: true, applicable: true },
+  blocked: { label: "Blocked", score: 0.15, countsAsAnswered: true, applicable: true },
+  first_party_other: { label: "First Party Other", score: 0.5, countsAsAnswered: true, applicable: true },
+  third_party: { label: "Third Party", score: 0.5, countsAsAnswered: true, applicable: true },
+  will_not_pursue: { label: "Will Not Pursue", score: 0, countsAsAnswered: true, applicable: true },
+  ms_roadmap: { label: "MS Roadmap", score: 0.45, countsAsAnswered: true, applicable: true },
+  follow_up: { label: "Follow Up", score: 0.25, countsAsAnswered: true, applicable: true },
+  not_applicable: { label: "Not Applicable", score: 0, countsAsAnswered: true, applicable: false },
+};
 const LANE_ORDER = ["first", "then", "later"];
 
 const state = {
@@ -25,7 +39,6 @@ const el = {
   workloadScores: document.getElementById("workload-scores"),
   statusBadge: document.getElementById("status-badge"),
   downloadJsonBtn: document.getElementById("download-json-btn"),
-  exportScorecardBtn: document.getElementById("export-scorecard-btn"),
   importFile: document.getElementById("import-file"),
   importFeedback: document.getElementById("import-feedback"),
   detailPanel: document.getElementById("detail-panel"),
@@ -76,15 +89,11 @@ function normalizeQuestion(rawQuestion, fallbackIndex) {
       : "medium";
   const safeDefaultLane = LANE_ORDER.includes(rawQuestion.lane) ? rawQuestion.lane : "";
 
-  const numericWeight = Number(rawQuestion.weight);
-  const defaultWeight = safeCriticality === "high" ? 8 : safeCriticality === "medium" ? 5 : 3;
-
   return {
     id: rawQuestion.id || `QX-${fallbackIndex + 1}`,
     controlId: rawQuestion.controlId || null,
     workload: rawQuestion.workload || rawQuestion.topic || "General",
     criticality: safeCriticality,
-    weight: Number.isFinite(numericWeight) && numericWeight > 0 ? numericWeight : defaultWeight,
     prompt: rawQuestion.prompt || "Question text unavailable.",
     remediationHint:
       rawQuestion.remediationHint ||
@@ -96,7 +105,7 @@ function normalizeQuestion(rawQuestion, fallbackIndex) {
 
 function getResponse(id) {
   if (!state.responses[id]) {
-    state.responses[id] = { answer: "", comment: "", owner: "", lane: "" };
+    state.responses[id] = { status: "not_reviewed", comment: "", owner: "", lane: "" };
   }
   return state.responses[id];
 }
@@ -129,7 +138,10 @@ function setQuestionSet(includeBacklog) {
 }
 
 function getAnswerCount() {
-  return state.questions.filter((q) => getResponse(q.id).answer).length;
+  return state.questions.filter((q) => {
+    const status = getResponse(q.id).status || "not_reviewed";
+    return Boolean(STATUS_META[status]?.countsAsAnswered);
+  }).length;
 }
 
 function getKnownOwners() {
@@ -170,12 +182,12 @@ function updateProgress() {
   el.progressFill.style.width = `${Math.round(pct)}%`;
 }
 
-function rowStatus(answer) {
-  if (answer === "yes") return { label: "Complete", cls: "complete" };
-  if (answer === "partial") return { label: "In Progress", cls: "progress" };
-  if (answer === "not_sure") return { label: "Needs Validation", cls: "review" };
-  if (answer === "no") return { label: "Not Started", cls: "gap" };
-  return { label: "Pending", cls: "pending" };
+function statusLabel(status) {
+  return STATUS_META[status]?.label || STATUS_META.not_reviewed.label;
+}
+
+function statusScore(status) {
+  return STATUS_META[status]?.score ?? 0;
 }
 
 function defaultLaneForQuestion(question) {
@@ -199,7 +211,7 @@ function selectTask(questionId) {
   const response = getResponse(questionId);
   renderOwnerSuggestions();
   el.detailTaskTitle.textContent = question.prompt;
-  el.detailStatus.value = response.answer || "";
+  el.detailStatus.value = response.status || "not_reviewed";
   el.detailNotes.value = response.comment || "";
   el.charUsed.textContent = String((response.comment || "").length);
   el.detailOwner.value = response.owner || "";
@@ -244,10 +256,13 @@ function renderQuestions() {
 
   grouped.forEach((questions, workload) => {
     const total = questions.length;
-    const answered = questions.filter((q) => getResponse(q.id).answer).length;
-    const weightedEarned = questions.reduce((sum, q) => sum + scoreForQuestion(q, getResponse(q.id).answer), 0);
-    const weightedTotal = questions.reduce((sum, q) => sum + (Number(q.weight) || 1), 0);
-    const score = weightedTotal === 0 ? 0 : Math.round((weightedEarned / weightedTotal) * 100);
+    const answered = questions.filter((q) => {
+      const status = getResponse(q.id).status || "not_reviewed";
+      return Boolean(STATUS_META[status]?.countsAsAnswered);
+    }).length;
+    const applicable = questions.filter((q) => STATUS_META[getResponse(q.id).status || "not_reviewed"]?.applicable);
+    const earned = applicable.reduce((sum, q) => sum + statusScore(getResponse(q.id).status || "not_reviewed"), 0);
+    const score = applicable.length === 0 ? 0 : Math.round((earned / applicable.length) * 100);
 
     const row = document.createElement("section");
     row.className = "board-row";
@@ -285,7 +300,6 @@ function renderQuestions() {
       } else {
         laneQuestions.forEach((q) => {
           const response = getResponse(q.id);
-          const status = rowStatus(response.answer);
 
           const card = document.createElement("article");
           card.className = "task-card";
@@ -293,7 +307,7 @@ function renderQuestions() {
             <div class="card-badges">
               <span class="task-badge id">${q.id}</span>
               <span class="task-badge criticality ${q.criticality}">${q.criticality.toUpperCase()}</span>
-              <span class="task-badge weight">W${q.weight}</span>
+              <span class="task-badge status">${statusLabel(response.status || "not_reviewed")}</span>
             </div>
             <h4>${q.prompt}</h4>
           `;
@@ -318,48 +332,46 @@ function renderQuestions() {
   updateProgress();
 }
 
-function scoreForQuestion(q, answerValue) {
-  if (!answerValue) return 0;
-  const answerScore = SCORE_MAP[answerValue] ?? 0;
-  return answerScore * (Number(q.weight) || 1);
-}
-
 function computeResults() {
-  const weightedEarned = state.questions.reduce((sum, q) => {
-    const response = getResponse(q.id);
-    return sum + scoreForQuestion(q, response.answer);
-  }, 0);
-
-  const weightedTotal = state.questions.reduce((sum, q) => sum + (Number(q.weight) || 1), 0);
-  const overallPct = weightedTotal === 0 ? 0 : (weightedEarned / weightedTotal) * 100;
+  const applicableQuestions = state.questions.filter(
+    (q) => STATUS_META[getResponse(q.id).status || "not_reviewed"]?.applicable
+  );
+  const totalScore = applicableQuestions.reduce(
+    (sum, q) => sum + statusScore(getResponse(q.id).status || "not_reviewed"),
+    0
+  );
+  const overallPct = applicableQuestions.length === 0 ? 0 : (totalScore / applicableQuestions.length) * 100;
 
   const workloadMap = new Map();
   state.questions.forEach((q) => {
     const key = q.workload || "General";
-    if (!workloadMap.has(key)) workloadMap.set(key, { earned: 0, total: 0 });
+    if (!workloadMap.has(key)) workloadMap.set(key, { earned: 0, count: 0 });
     const bucket = workloadMap.get(key);
-    const response = getResponse(q.id);
-    bucket.earned += scoreForQuestion(q, response.answer);
-    bucket.total += Number(q.weight) || 1;
+    const status = getResponse(q.id).status || "not_reviewed";
+    if (STATUS_META[status]?.applicable) {
+      bucket.earned += statusScore(status);
+      bucket.count += 1;
+    }
   });
 
   const workloadScores = Array.from(workloadMap.entries()).map(([workload, v]) => ({
     workload,
-    score: v.total === 0 ? 0 : Math.round((v.earned / v.total) * 100),
+    score: v.count === 0 ? 0 : Math.round((v.earned / v.count) * 100),
   }));
 
   const gaps = state.questions
     .map((q) => {
       const response = getResponse(q.id);
-      const answerScore = response.answer ? SCORE_MAP[response.answer] : 0;
-      return { q, response, answerScore };
+      const status = response.status || "not_reviewed";
+      const meta = STATUS_META[status] || STATUS_META.not_reviewed;
+      return { q, response, status, meta, score: statusScore(status) };
     })
-    .filter((x) => x.answerScore < 1)
+    .filter((x) => x.meta.applicable && x.status !== "completed")
     .sort((a, b) => {
       if (a.q.criticality !== b.q.criticality) {
         return criticalityRank(b.q.criticality) - criticalityRank(a.q.criticality);
       }
-      return b.q.weight - a.q.weight;
+      return a.score - b.score;
     });
 
   const highGapCount = gaps.filter((x) => x.q.criticality === "high").length;
@@ -491,89 +503,12 @@ function setImportFeedback(message, tone = "info") {
   }, 2600);
 }
 
-function csvEscape(value) {
-  const raw = String(value ?? "");
-  if (/[",\n]/.test(raw)) {
-    return `"${raw.replace(/"/g, '""')}"`;
-  }
-  return raw;
-}
-
-function downloadCsv(filename, rows) {
-  const csvBody = rows.map((row) => row.map(csvEscape).join(",")).join("\n");
-  const blob = new Blob([csvBody], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-  const anchor = document.createElement("a");
-  anchor.href = url;
-  anchor.download = filename;
-  anchor.click();
-  URL.revokeObjectURL(url);
-}
-
-function exportScorecardCsv() {
-  const results = computeResults();
-  const rows = [];
-
-  rows.push(["Copilot Readiness Scorecard Export"]);
-  rows.push(["Exported At", new Date().toISOString()]);
-  rows.push([]);
-  rows.push(["Summary Metrics"]);
-  rows.push(["Metric", "Value"]);
-  rows.push(["Overall Score", `${results.overallPct}%`]);
-  rows.push(["High Gaps", results.highGapCount]);
-  rows.push(["Answered", `${results.answeredCount}/${state.questions.length}`]);
-  rows.push([]);
-
-  rows.push(["Workload Scores"]);
-  rows.push(["Workload", "Score"]);
-  results.workloadScores
-    .sort((a, b) => b.score - a.score)
-    .forEach((entry) => rows.push([entry.workload, `${entry.score}%`]));
-  rows.push([]);
-
-  rows.push(["Top Recommended Actions"]);
-  rows.push(["Rank", "Question ID", "Workload", "Criticality", "Current Answer", "Owner", "Action", "Source URL"]);
-  results.topActions.forEach((item, index) => {
-    rows.push([
-      index + 1,
-      item.q.id,
-      item.q.workload,
-      item.q.criticality,
-      item.response.answer || "not reviewed",
-      item.response.owner || "",
-      item.q.remediationHint,
-      getInfoUrl(item.q),
-    ]);
-  });
-  rows.push([]);
-
-  rows.push(["Question-Level Detail"]);
-  rows.push(["Question ID", "Workload", "Lane", "Criticality", "Weight", "Answer", "Owner", "Comment", "Prompt", "Source URL"]);
-  state.questions.forEach((q) => {
-    const response = getResponse(q.id);
-    rows.push([
-      q.id,
-      q.workload,
-      getLaneForQuestion(q),
-      q.criticality,
-      q.weight,
-      response.answer || "not reviewed",
-      response.owner || "",
-      response.comment || "",
-      q.prompt,
-      getInfoUrl(q),
-    ]);
-  });
-
-  downloadCsv("copilot-readiness-scorecard.csv", rows);
-}
-
 function clearAllAnswers() {
   const hasAnyData = Object.values(state.responses).some((response) => {
-    const answer = String(response?.answer || "").trim();
+    const status = String(response?.status || "").trim();
     const comment = String(response?.comment || "").trim();
     const owner = String(response?.owner || "").trim();
-    return Boolean(answer || comment || owner);
+    return Boolean((status && status !== "not_reviewed") || comment || owner);
   });
 
   if (!hasAnyData) {
@@ -638,7 +573,6 @@ function wireEvents() {
   });
 
   el.downloadJsonBtn.addEventListener("click", downloadSnapshot);
-  el.exportScorecardBtn?.addEventListener("click", exportScorecardCsv);
 
   el.importFile.addEventListener("change", (event) => {
     const target = event.target;
@@ -657,7 +591,7 @@ function wireEvents() {
 
   el.detailStatus.addEventListener("change", () => {
     if (state.selectedTaskId) {
-      getResponse(state.selectedTaskId).answer = el.detailStatus.value;
+      getResponse(state.selectedTaskId).status = el.detailStatus.value;
       updateProgress();
       renderResults();
       renderQuestions();
