@@ -37,7 +37,6 @@
           <div class="panel-row compact">
             <button id="clear-answers-btn" class="btn btn-warning">Clear Answers</button>
             <button id="download-json-btn" class="btn btn-primary">Export JSON</button>
-            <button id="export-scorecard-btn" class="btn btn-primary">Export Scorecard CSV</button>
             <label class="btn btn-primary file-btn" for="import-file">Import JSON</label>
             <input id="import-file" type="file" accept="application/json" />
           </div>
@@ -107,11 +106,19 @@
             <div class="detail-row">
               <label for="detail-status">Status:</label>
               <select id="detail-status" class="detail-select">
-                <option value="">Not reviewed</option>
-                <option value="yes">Yes</option>
-                <option value="partial">Partial</option>
-                <option value="not_sure">Not sure</option>
-                <option value="no">No</option>
+                <option value="not_reviewed">Not Reviewed</option>
+                <option value="not_started">Not Started</option>
+                <option value="in_planning">In Planning</option>
+                <option value="planned">Planned</option>
+                <option value="in_progress">In Progress</option>
+                <option value="completed">Completed</option>
+                <option value="blocked">Blocked</option>
+                <option value="first_party_other">First Party Other</option>
+                <option value="third_party">Third Party</option>
+                <option value="will_not_pursue">Will Not Pursue</option>
+                <option value="ms_roadmap">MS Roadmap</option>
+                <option value="follow_up">Follow Up</option>
+                <option value="not_applicable">Not Applicable</option>
               </select>
               <a id="detail-learn-link" href="" class="view-details-link" target="_blank" rel="noopener noreferrer" hidden>More Info ↗</a>
             </div>

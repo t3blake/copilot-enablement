@@ -2,7 +2,21 @@
   "version": "0.2.0",
   "title": "Copilot Enablement Hub Question Bank",
   "lastReviewed": "2026-05-01",
-  "responseOptions": ["yes", "partial", "not_sure", "no"],
+  "responseOptions": [
+    "not_reviewed",
+    "not_started",
+    "in_planning",
+    "planned",
+    "in_progress",
+    "completed",
+    "blocked",
+    "first_party_other",
+    "third_party",
+    "will_not_pursue",
+    "ms_roadmap",
+    "follow_up",
+    "not_applicable"
+  ],
   "questions": [
     {
       "id": "Q-001",

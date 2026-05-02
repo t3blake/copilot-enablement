@@ -1,139 +1,139 @@
 {
   "exportVersion": "0.2",
-  "exportedAt": "2026-05-01T22:00:00.000Z",
+  "exportedAt": "2026-05-01T22:00:00Z",
   "includeBacklog": false,
   "responses": {
     "Q-001": {
-      "answer": "yes",
       "comment": "Pilot licenses assigned to initial cross-functional cohort.",
       "owner": "John Doe",
-      "lane": ""
+      "lane": "",
+      "status": "completed"
     },
     "Q-002": {
-      "answer": "yes",
       "comment": "All pilot users are in Entra with Exchange Online mailboxes.",
       "owner": "John Doe",
-      "lane": ""
+      "lane": "",
+      "status": "completed"
     },
     "Q-003": {
-      "answer": "partial",
       "comment": "Most pilot devices are on supported M365 Apps channel; a few remain to be updated.",
       "owner": "John Doe",
-      "lane": ""
+      "lane": "",
+      "status": "in_progress"
     },
     "Q-004": {
-      "answer": "partial",
       "comment": "Proxy and endpoint policy updates in progress for branch offices.",
       "owner": "Pat Taylor",
-      "lane": ""
+      "lane": "",
+      "status": "in_progress"
     },
     "Q-005": {
-      "answer": "no",
       "comment": "Feature Updates scheduled task currently disabled by endpoint baseline.",
       "owner": "Pat Taylor",
-      "lane": ""
+      "lane": "",
+      "status": "not_started"
     },
     "Q-006": {
-      "answer": "partial",
       "comment": "Admins are covered; some pilot users still on temporary MFA exceptions.",
       "owner": "Jane Doe",
-      "lane": ""
+      "lane": "",
+      "status": "in_progress"
     },
     "Q-007": {
-      "answer": "no",
       "comment": "Conditional Access baseline not fully enforced yet.",
       "owner": "Jane Doe",
-      "lane": ""
+      "lane": "",
+      "status": "not_started"
     },
     "Q-008": {
-      "answer": "no",
       "comment": "Interim oversharing protections not yet applied to known high-risk sites.",
       "owner": "Jane Doe",
-      "lane": ""
+      "lane": "",
+      "status": "not_started"
     },
     "Q-009": {
-      "answer": "not_sure",
       "comment": "External sharing baseline is being inventoried.",
       "owner": "Jane Doe",
-      "lane": ""
+      "lane": "",
+      "status": "follow_up"
     },
     "Q-010": {
-      "answer": "partial",
       "comment": "Sensitivity labels published, but adoption/coverage is still early.",
       "owner": "Jane Doe",
-      "lane": ""
+      "lane": "",
+      "status": "in_progress"
     },
     "Q-011": {
-      "answer": "no",
       "comment": "DLP baseline has not been turned on for all target locations.",
       "owner": "Jane Doe",
-      "lane": ""
+      "lane": "",
+      "status": "not_started"
     },
     "Q-012": {
-      "answer": "yes",
       "comment": "Unified audit logging is enabled with default retention.",
       "owner": "Jane Doe",
-      "lane": ""
+      "lane": "",
+      "status": "completed"
     },
     "Q-013": {
-      "answer": "not_sure",
       "comment": "Teams recording/transcription settings are inconsistent across groups.",
       "owner": "Pat Taylor",
-      "lane": ""
+      "lane": "",
+      "status": "follow_up"
     },
     "Q-014": {
-      "answer": "not_sure",
       "comment": "Loop/Whiteboard Copilot scenarios not yet in pilot scope.",
       "owner": "John Doe",
-      "lane": ""
+      "lane": "",
+      "status": "follow_up"
     },
     "Q-015": {
-      "answer": "yes",
       "comment": "Pilot ring and champions identified in Sales, Finance, and HR.",
       "owner": "John Doe",
-      "lane": ""
+      "lane": "",
+      "status": "completed"
     },
     "Q-016": {
-      "answer": "partial",
       "comment": "Enablement assets drafted; launch communications still pending review.",
       "owner": "John Doe",
-      "lane": ""
+      "lane": "",
+      "status": "in_progress"
     },
     "Q-017": {
-      "answer": "no",
       "comment": "DSPM/SharePoint risk assessment has not been run yet.",
       "owner": "Jane Doe",
-      "lane": ""
+      "lane": "",
+      "status": "not_started"
     },
     "Q-018": {
-      "answer": "yes",
       "comment": "Test environment established for pilot validation.",
       "owner": "John Doe",
-      "lane": ""
+      "lane": "",
+      "status": "completed"
     },
     "Q-019": {
-      "answer": "no",
       "comment": "No recurring access review cycle yet for high-risk collaboration spaces.",
       "owner": "Jane Doe",
-      "lane": ""
+      "lane": "",
+      "status": "not_started"
     },
     "Q-020": {
-      "answer": "partial",
       "comment": "Baseline device compliance exists; app protection policies still being tuned.",
       "owner": "Pat Taylor",
-      "lane": ""
+      "lane": "",
+      "status": "in_progress"
     },
     "Q-021": {
-      "answer": "not_sure",
       "comment": "Retention and investigation requirements are not formally defined.",
       "owner": "Jane Doe",
-      "lane": ""
+      "lane": "",
+      "status": "follow_up"
     },
     "Q-022": {
-      "answer": "partial",
       "comment": "App privacy and connected experiences reviewed for most pilot devices.",
       "owner": "Pat Taylor",
-      "lane": ""
+      "lane": "",
+      "status": "in_progress"
     }
   },
   "results": {
