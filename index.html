@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Copilot Enablement Hub</title>
+    <meta
+      name="description"
+      content="Copilot-focused readiness assessment for Microsoft 365 deployments."
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <p class="kicker">Copilot Enablement Tracker</p>
+        <h1>Microsoft 365 Copilot Readiness Tracker</h1>
+      </div>
+      <div class="topbar-actions">
+        <button
+          id="references-btn"
+          class="btn btn-secondary"
+          aria-label="View official Microsoft documentation and references"
+          title="Official Microsoft Guidance"
+        >
+          References
+        </button>
+        <a
+          class="icon-link"
+          href="https://github.com/t3blake/copilot-enablement"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Open GitHub repository"
+          title="View source on GitHub"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 2C6.477 2 2 6.596 2 12.266c0 4.535 2.865 8.382 6.839 9.74.5.096.682-.223.682-.495 0-.245-.009-.894-.014-1.754-2.782.619-3.369-1.394-3.369-1.394-.455-1.185-1.11-1.5-1.11-1.5-.908-.638.069-.625.069-.625 1.004.072 1.532 1.06 1.532 1.06.892 1.57 2.341 1.116 2.91.853.091-.667.349-1.116.635-1.373-2.221-.26-4.555-1.14-4.555-5.074 0-1.121.389-2.038 1.029-2.756-.103-.26-.446-1.307.098-2.724 0 0 .84-.277 2.75 1.053A9.38 9.38 0 0 1 12 6.836a9.38 9.38 0 0 1 2.504.347c1.909-1.33 2.748-1.053 2.748-1.053.546 1.417.202 2.464.099 2.724.64.718 1.028 1.635 1.028 2.756 0 3.944-2.338 4.811-4.566 5.066.359.317.678.944.678 1.902 0 1.373-.012 2.48-.012 2.818 0 .274.18.595.688.494C19.138 20.644 22 16.799 22 12.266 22 6.596 17.523 2 12 2Z" />
+          </svg>
+        </a>
+      </div>
+    </header>
+
+    <main class="shell">
+        <section class="control-strip">
+          <div class="panel-row compact">
+            <button id="clear-answers-btn" class="btn btn-warning">Clear Answers</button>
+            <button id="download-json-btn" class="btn btn-primary">Export JSON</button>
+            <label class="btn btn-primary file-btn" for="import-file">Import JSON</label>
+            <input id="import-file" type="file" accept="application/json" />
+          </div>
+          <p id="import-feedback" class="import-feedback" role="status" aria-live="polite"></p>
+        </section>
+
+        <section id="assessment-view" class="view visible">
+          <section class="summary-hub">
+            <div class="summary-tabs" role="tablist" aria-label="Summary views">
+              <button id="summary-tab-tracker" class="summary-tab active" role="tab" aria-selected="true" aria-controls="summary-pane-tracker" type="button">Tracker</button>
+              <button id="summary-tab-scorecard" class="summary-tab" role="tab" aria-selected="false" aria-controls="summary-pane-scorecard" type="button">Detailed Scorecard</button>
+            </div>
+
+            <div id="summary-pane-tracker" class="summary-pane" role="tabpanel" aria-labelledby="summary-tab-tracker">
+              <div class="summary-row compact">
+                <div class="summary-cell emphasis">
+                  <div id="status-badge" class="status-badge">Pending</div>
+                  <p id="progress-label">0/0 answered</p>
+                  <div class="progress-bar"><div id="progress-fill"></div></div>
+                </div>
+                <div class="summary-cell mini">
+                  <p class="summary-label">Overall</p>
+                  <p id="overall-score" class="metric-value">0%</p>
+                </div>
+                <div class="summary-cell mini">
+                  <p class="summary-label">High Gaps</p>
+                  <p id="high-gap-count" class="metric-value">0</p>
+                </div>
+                <div class="summary-cell mini">
+                  <p class="summary-label">Completed</p>
+                  <p id="answered-count" class="metric-value">0</p>
+                </div>
+              </div>
+            </div>
+
+            <div id="summary-pane-scorecard" class="summary-pane hidden" role="tabpanel" aria-labelledby="summary-tab-scorecard">
+              <div class="scorecard-grid">
+                <section class="scorecard-card">
+                  <h3>Top Recommended Actions</h3>
+                  <ol id="top-actions" class="top-actions"></ol>
+                </section>
+                <section class="scorecard-card">
+                  <h3>Score by Workload</h3>
+                  <div id="workload-scores" class="workload-scores"></div>
+                </section>
+              </div>
+            </div>
+          </section>
+
+          <div class="tracker-board-wrap">
+            <div class="lane-header-row">
+              <div class="area-header-cell">Category</div>
+              <div class="lane-header first">First</div>
+              <div class="lane-header then">Then</div>
+              <div class="lane-header later">Later</div>
+            </div>
+            <div id="board-rows" class="board-rows"></div>
+          </div>
+        </section>
+
+        <section id="detail-panel" class="detail-panel hidden" aria-hidden="true">
+          <div class="detail-header">
+            <h3 id="detail-task-title">Selected Task</h3>
+            <button id="detail-close-btn" class="detail-close" aria-label="Close detail panel">×</button>
+          </div>
+          <div class="detail-body">
+            <div class="detail-row">
+              <label for="detail-status">Status:</label>
+              <select id="detail-status" class="detail-select">
+                <option value="not_reviewed">Not Reviewed</option>
+                <option value="not_started">Not Started</option>
+                <option value="in_planning">In Planning</option>
+                <option value="planned">Planned</option>
+                <option value="in_progress">In Progress</option>
+                <option value="completed">Completed</option>
+                <option value="blocked">Blocked</option>
+                <option value="first_party_other">First Party Other</option>
+                <option value="third_party">Third Party</option>
+                <option value="will_not_pursue">Will Not Pursue</option>
+                <option value="ms_roadmap">MS Roadmap</option>
+                <option value="follow_up">Follow Up</option>
+                <option value="not_applicable">Not Applicable</option>
+              </select>
+              <a id="detail-learn-link" href="" class="view-details-link" target="_blank" rel="noopener noreferrer" hidden>More Info ↗</a>
+            </div>
+            <div class="detail-row notes-row">
+              <label for="detail-notes">Notes:</label>
+              <textarea id="detail-notes" class="detail-textarea" placeholder="Add notes about this task..."></textarea>
+              <span class="char-count"><span id="char-used">0</span>/1000</span>
+            </div>
+            <div class="detail-row meta-row">
+              <label for="detail-owner">Owner:</label>
+              <div class="owner-field-group">
+                <input type="text" id="detail-owner" class="detail-input" list="owner-suggestions" placeholder="Assign owner">
+                <select id="saved-owner-select" class="detail-select saved-owner-select" aria-label="Saved owners">
+                  <option value="">Saved owners</option>
+                </select>
+                <datalist id="owner-suggestions"></datalist>
+              </div>
+            </div>
+            <div class="detail-row lane-row">
+              <label for="detail-lane">Lane:</label>
+              <select id="detail-lane" class="detail-select">
+                <option value="first">First</option>
+                <option value="then">Then</option>
+                <option value="later">Later</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+        <section id="references-panel" class="references-panel hidden" aria-hidden="true">
+          <div class="references-header">
+            <h2>Official Microsoft Guidance</h2>
+            <button id="references-close-btn" class="references-close" aria-label="Close references panel">×</button>
+          </div>
+          <div class="references-body">
+            <div class="references-intro">
+              <p>The Copilot Enablement Hub is built on <strong>official Microsoft documentation</strong>. Use these resources for comprehensive deployment guidance:</p>
+            </div>
+            
+            <div class="references-sections">
+              <div class="reference-section">
+                <h3>Core Microsoft Learn Resources</h3>
+                <ul>
+                  <li><a href="https://learn.microsoft.com/en-us/microsoft-365/copilot/" target="_blank" rel="noopener noreferrer">Microsoft 365 Copilot Documentation ↗</a></li>
+                  <li><a href="https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-setup" target="_blank" rel="noopener noreferrer">Setup & Deploy Copilot ↗</a></li>
+                  <li><a href="https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-requirements" target="_blank" rel="noopener noreferrer">Prerequisites & Requirements ↗</a></li>
+                  <li><a href="https://learn.microsoft.com/en-us/microsoft-365/copilot/configure-secure-governed-data-foundation-microsoft-365-copilot" target="_blank" rel="noopener noreferrer">Secure & Governed Data Foundation ↗</a></li>
+                </ul>
+              </div>
+
+              <div class="reference-section">
+                <h3>Data Protection & Compliance</h3>
+                <ul>
+                  <li><a href="https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-architecture-data-protection-auditing" target="_blank" rel="noopener noreferrer">Data Protection & Auditing Architecture ↗</a></li>
+                  <li><a href="https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-privacy" target="_blank" rel="noopener noreferrer">Privacy & Data Security ↗</a></li>
+                  <li><a href="https://learn.microsoft.com/en-us/microsoft-365/copilot/enterprise-data-protection" target="_blank" rel="noopener noreferrer">Enterprise Data Protection ↗</a></li>
+                  <li><a href="https://learn.microsoft.com/en-us/purview/get-started-with-sensitivity-labels" target="_blank" rel="noopener noreferrer">Sensitivity Labels ↗</a></li>
+                  <li><a href="https://learn.microsoft.com/en-us/purview/dlp-learn-about-dlp" target="_blank" rel="noopener noreferrer">Data Loss Prevention (DLP) ↗</a></li>
+                </ul>
+              </div>
+
+              <div class="reference-section">
+                <h3>Identity & Zero Trust</h3>
+                <ul>
+                  <li><a href="https://learn.microsoft.com/en-us/security/zero-trust/copilots/zero-trust-microsoft-365-copilot" target="_blank" rel="noopener noreferrer">Zero Trust for Microsoft 365 Copilot ↗</a></li>
+                  <li><a href="https://learn.microsoft.com/en-us/entra/identity/conditional-access/overview" target="_blank" rel="noopener noreferrer">Conditional Access ↗</a></li>
+                  <li><a href="https://learn.microsoft.com/en-us/entra/identity/authentication/concept-mfa-howitworks" target="_blank" rel="noopener noreferrer">Multi-Factor Authentication ↗</a></li>
+                </ul>
+              </div>
+
+              <div class="reference-section">
+                <h3>Adoption & Governance</h3>
+                <ul>
+                  <li><a href="https://adoption.microsoft.com/en-us/copilot/" target="_blank" rel="noopener noreferrer">Microsoft Adoption Hub - Copilot ↗</a></li>
+                  <li><a href="https://adoption.microsoft.com/copilot/skilling-center/" target="_blank" rel="noopener noreferrer">Copilot Skilling Center ↗</a></li>
+                  <li><a href="https://learn.microsoft.com/en-us/purview/insider-risk-management-solution-overview" target="_blank" rel="noopener noreferrer">Insider Risk Management ↗</a></li>
+                  <li><a href="https://learn.microsoft.com/en-us/purview/compliance-manager" target="_blank" rel="noopener noreferrer">Compliance Manager ↗</a></li>
+                </ul>
+              </div>
+
+              <div class="reference-section">
+                <h3>Compliance & Retention</h3>
+                <ul>
+                  <li><a href="https://learn.microsoft.com/en-us/purview/audit-search" target="_blank" rel="noopener noreferrer">Audit Logging & Search ↗</a></li>
+                  <li><a href="https://learn.microsoft.com/en-us/purview/retention-policies-copilot" target="_blank" rel="noopener noreferrer">Retention Policies for Copilot ↗</a></li>
+                  <li><a href="https://learn.microsoft.com/en-us/purview/create-retention-policies" target="_blank" rel="noopener noreferrer">Create Retention Policies ↗</a></li>
+                  <li><a href="https://learn.microsoft.com/en-us/purview/communication-compliance-solution-overview" target="_blank" rel="noopener noreferrer">Communication Compliance ↗</a></li>
+                </ul>
+              </div>
+
+              <div class="reference-section">
+                <h3>Deployment & Configuration</h3>
+                <ul>
+                  <li><a href="https://learn.microsoft.com/en-us/microsoft-365-apps/updates/change-channel-for-copilot" target="_blank" rel="noopener noreferrer">Update Channels for Copilot ↗</a></li>
+                  <li><a href="https://learn.microsoft.com/en-us/microsoftteams/copilot-teams-transcription" target="_blank" rel="noopener noreferrer">Copilot in Teams Meetings ↗</a></li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="references-footer">
+              <p><strong>Note:</strong> This tracker uses <strong>official Microsoft sources only</strong> (Microsoft Learn, Adoption Hub, Zero Trust Guidance). Click any question's "More Info" link for specific guidance on that topic.</p>
+            </div>
+          </div>
+        </section>
+
+    </main>
+
+    <script type="module" src="main.js"></script>
+  </body>
+</html>

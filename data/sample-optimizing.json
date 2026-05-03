@@ -1,0 +1,328 @@
+{
+  "exportVersion": "0.2",
+  "exportedAt": "2026-05-03T16:43:55Z",
+  "includeBacklog": true,
+  "responses": {
+    "Q-001": {
+      "comment": "Licensing baseline complete for production and growth cohorts.",
+      "owner": "John Doe",
+      "lane": "",
+      "status": "completed"
+    },
+    "Q-002": {
+      "comment": "Identity/mailbox prerequisites continuously validated.",
+      "owner": "John Doe",
+      "lane": "",
+      "status": "completed"
+    },
+    "Q-003": {
+      "comment": "Supported channels enforced through endpoint policy.",
+      "owner": "Pat Taylor",
+      "lane": "",
+      "status": "completed"
+    },
+    "Q-004": {
+      "comment": "Network requirements documented and monitored.",
+      "owner": "Pat Taylor",
+      "lane": "",
+      "status": "completed"
+    },
+    "Q-005": {
+      "comment": "Office Feature Updates task validated in compliance checks.",
+      "owner": "Pat Taylor",
+      "lane": "",
+      "status": "completed"
+    },
+    "Q-006": {
+      "comment": "MFA enforced with no active exceptions in Copilot scope.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "completed"
+    },
+    "Q-007": {
+      "comment": "Conditional Access baseline fully enforced including legacy auth block.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "completed"
+    },
+    "Q-008": {
+      "comment": "Interim oversharing controls applied to high-risk locations.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "completed"
+    },
+    "Q-009": {
+      "comment": "External sharing baseline standardized and exception-tracked.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "completed"
+    },
+    "Q-010": {
+      "comment": "Sensitivity labels operational with broad coverage.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "completed"
+    },
+    "Q-011": {
+      "comment": "DLP baseline active with incident ownership and runbooks.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "completed"
+    },
+    "Q-012": {
+      "comment": "Audit retention aligned with legal/compliance requirements.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "completed"
+    },
+    "Q-013": {
+      "comment": "Teams transcription policy aligned to targeted Copilot scenarios.",
+      "owner": "Pat Taylor",
+      "lane": "",
+      "status": "completed"
+    },
+    "Q-014": {
+      "comment": "Loop/Whiteboard scoped rollout active; broader validation in progress.",
+      "owner": "John Doe",
+      "lane": "",
+      "status": "in_progress"
+    },
+    "Q-015": {
+      "comment": "Champion network established and expanded by business unit.",
+      "owner": "John Doe",
+      "lane": "",
+      "status": "completed"
+    },
+    "Q-016": {
+      "comment": "Enablement and communications integrated into rollout cadence.",
+      "owner": "John Doe",
+      "lane": "",
+      "status": "completed"
+    },
+    "Q-017": {
+      "comment": "DSPM and SharePoint assessments run monthly with remediation backlog.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "completed"
+    },
+    "Q-018": {
+      "comment": "Test environment used for policy and scenario pre-validation.",
+      "owner": "Pat Taylor",
+      "lane": "",
+      "status": "completed"
+    },
+    "Q-019": {
+      "comment": "Access review cadence established for high-risk sites and groups.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "completed"
+    },
+    "Q-020": {
+      "comment": "Device compliance and app protection policies enforced across managed devices.",
+      "owner": "Pat Taylor",
+      "lane": "",
+      "status": "completed"
+    },
+    "Q-021": {
+      "comment": "Retention model defined; optimization for transcript scope ongoing.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "in_progress"
+    },
+    "Q-022": {
+      "comment": "App privacy/connected experiences baselines validated for Copilot users.",
+      "owner": "Pat Taylor",
+      "lane": "",
+      "status": "completed"
+    },
+    "Q-023": {
+      "comment": "Control is active with optimization actions tracked to completion.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "completed"
+    },
+    "QB-101": {
+      "comment": "Control is active with optimization actions tracked to completion.",
+      "owner": "John Doe",
+      "lane": "",
+      "status": "completed"
+    },
+    "QB-102": {
+      "comment": "Control is active with optimization actions tracked to completion.",
+      "owner": "John Doe",
+      "lane": "",
+      "status": "completed"
+    },
+    "QB-103": {
+      "comment": "Data residency edge cases documented for select geos.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "completed"
+    },
+    "QB-104": {
+      "comment": "Geo alignment remediation plan in flight for two workloads.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "completed"
+    },
+    "QB-105": {
+      "comment": "Control is active with optimization actions tracked to completion.",
+      "owner": "John Doe",
+      "lane": "",
+      "status": "completed"
+    },
+    "QB-107": {
+      "comment": "Control is active with optimization actions tracked to completion.",
+      "owner": "John Doe",
+      "lane": "",
+      "status": "in_progress"
+    },
+    "QB-111": {
+      "comment": "Control is active with optimization actions tracked to completion.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "completed"
+    },
+    "QB-112": {
+      "comment": "Control is active with optimization actions tracked to completion.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "in_progress"
+    },
+    "QB-113": {
+      "comment": "Label coverage improving; long-tail legacy repositories still being addressed.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "completed"
+    },
+    "QB-114": {
+      "comment": "Control is active with optimization actions tracked to completion.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "in_progress"
+    },
+    "QB-117": {
+      "comment": "Audit retention windows mapped to investigation and legal obligations.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "completed"
+    },
+    "QB-118": {
+      "comment": "Advanced governance capability planned in the next optimization cycle.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "in_progress"
+    },
+    "QB-119": {
+      "comment": "Advanced governance capability planned in the next optimization cycle.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "in_progress"
+    },
+    "QB-120": {
+      "comment": "Advanced governance capability planned in the next optimization cycle.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "completed"
+    },
+    "QB-121": {
+      "comment": "Advanced governance capability planned in the next optimization cycle.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "in_progress"
+    },
+    "QB-122": {
+      "comment": "eDiscovery workflows operational for priority incident types.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "completed"
+    },
+    "QB-123": {
+      "comment": "Advanced governance capability planned in the next optimization cycle.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "completed"
+    },
+    "QB-124": {
+      "comment": "Advanced governance capability planned in the next optimization cycle.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "completed"
+    },
+    "QB-127": {
+      "comment": "Advanced governance capability planned in the next optimization cycle.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "completed"
+    },
+    "QB-128": {
+      "comment": "Copilot-specific communication compliance policies active for high-risk cohorts.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "in_progress"
+    },
+    "QB-131": {
+      "comment": "Mobile access strategy implemented with differentiated controls.",
+      "owner": "Pat Taylor",
+      "lane": "",
+      "status": "completed"
+    },
+    "QB-132": {
+      "comment": "Control is active with optimization actions tracked to completion.",
+      "owner": "John Doe",
+      "lane": "",
+      "status": "in_progress"
+    },
+    "QB-133": {
+      "comment": "Control implemented and monitored as part of production baseline.",
+      "owner": "John Doe",
+      "lane": "",
+      "status": "in_progress"
+    },
+    "QB-134": {
+      "comment": "Archiving governance in place; automation coverage expansion planned.",
+      "owner": "John Doe",
+      "lane": "",
+      "status": "in_progress"
+    },
+    "QB-135": {
+      "comment": "Stale repository cleanup process active but not yet fully automated.",
+      "owner": "John Doe",
+      "lane": "",
+      "status": "in_progress"
+    },
+    "Q-024": {
+      "comment": "Advanced governance capability planned in the next optimization cycle.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "in_progress"
+    },
+    "Q-025": {
+      "comment": "Advanced governance capability planned in the next optimization cycle.",
+      "owner": "John Doe",
+      "lane": "",
+      "status": "in_progress"
+    },
+    "Q-026": {
+      "comment": "Advanced governance capability planned in the next optimization cycle.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "in_progress"
+    },
+    "Q-027": {
+      "comment": "Advanced governance capability planned in the next optimization cycle.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "in_progress"
+    },
+    "Q-028": {
+      "comment": "Advanced governance capability planned in the next optimization cycle.",
+      "owner": "John Doe",
+      "lane": "",
+      "status": "in_progress"
+    }
+  },
+  "results": {
+    "note": "Sample snapshot for an organization mostly in production, optimizing later-phase governance."
+  }
+}
