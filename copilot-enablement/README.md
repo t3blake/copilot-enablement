@@ -14,11 +14,11 @@ while linking to deeper official guidance when needed.
 
 ## What It Does
 
-1. **Track progress across 47 Copilot-readiness controls** in a visual grid organized by workload and execution lane
+1. **Track progress across 53 Copilot-readiness controls** in a visual grid organized by workload and execution lane
 2. **Assign status to each item** (Not Started, In Progress, Completed, Blocked, etc.) and track progression from planning to completion
 3. **See real-time scoring** showing overall readiness and per-workload progress based on your status selections
 4. **Download JSON snapshots** to save/share progress and re-import them later to continue or compare over time
-5. **Optionally include a deeper backlog** of 25 additional questions for extended assessment
+5. **Open official Microsoft references in-app** via the References panel, with links grouped by deployment domain
 
 ## Scope Guardrail
 
@@ -36,7 +36,7 @@ while linking to deeper official guidance when needed.
 
 ## Status
 
-🚧 **Prototype In Progress** — A working static assessment MVP is now scaffolded in `app/` and aligned to the design doc.
+✅ **Active MVP** — The app is live with a unified 53-question bank, references panel, and progress-aware scoring.
 
 ## Running Locally
 
@@ -52,6 +52,7 @@ Usage notes:
 - Questions range from critical prerequisites to advanced post-launch governance topics
 - All status changes and notes are saved in browser memory. Download a JSON snapshot to persist progress.
 - Scoring is progress-aware: items marked `Completed` or higher-progress statuses contribute more to overall readiness % than `Not Started` items.
+- Top recommended actions are ranked by criticality first, then deployment phase lane, then status maturity, then question weight (with deterministic tie-break by ID).
 - Each question links to relevant official Microsoft documentation for deeper guidance.
 
 ## Project Structure
@@ -68,7 +69,7 @@ copilot-enablement/
 │   └── data/           ← Assessment content (JSON)
 │       ├── questions.json               ← Complete question bank (53 questions)
 │       ├── questions.private.json       ← Optional local overlay for custom questions
-│       └── sample-*.json                ← Sample snapshots for import/testing
+│       └── sample-*.json                ← Importable snapshots (early pilot and optimization profiles)
 └── scripts/            ← Utility scripts (TBD)
 ```
 
@@ -113,4 +114,4 @@ MIT — see LICENSE file (coming soon)
 
 ---
 
-**Last updated:** May 1, 2026
+**Last updated:** May 3, 2026

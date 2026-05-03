@@ -1,6 +1,6 @@
 # Copilot Enablement Hub — Design Document
 
-> **Status:** Draft — firming up principles and goals before implementation.
+> **Status:** Active MVP — deployed and iterating on content quality, ranking logic, and governance depth.
 >
 > **Vision:** A publicly accessible web app that guides organizations through
 > Copilot adoption by providing an interactive **readiness assessment**,
@@ -146,7 +146,7 @@ If none are true, the item is out of scope for Phase 1.
 ### **4.1 Core Features**
 
 #### **A. Interactive Assessment**
-A guided questionnaire (~40–60 questions) that evaluates:
+A guided questionnaire (currently 53 questions) that evaluates:
 
 | Workload | Focus Areas | Examples |
 |---|---|---|
@@ -208,7 +208,7 @@ Embedded in the assessment — each section includes:
 - **Styling:** CSS custom properties + mobile-first responsive design (or Tailwind if we want utility-first)
 - **No Build Step (initially):** Vanilla JS served as-is, no bundler unless needed.
 
-### **Data Format: JSON-based Assessment**
+### **Data Format: JSON-based Assessment Snapshot**
 ```json
 {
   "version": "1.0",
@@ -252,15 +252,12 @@ Embedded in the assessment — each section includes:
 │         GitHub Pages Static SPA               │
 │                                              │
 │  index.html          ← Single page shell     │
-│  assessment.js       ← Question logic         │
-│  ui.js               ← Form rendering         │
-│  dashboard.js        ← Results visualization  │
-│  export.js           ← JSON/HTML export       │
+│  main.js             ← App state, rendering, scoring, import/export │
 │  style.css           ← Responsive design      │
 │  data/               ← Assessment data (JSON) │
-│    ├─ questions.json ← Question definitions  │
-│    ├─ guidance.json  ← Best-practice text    │
-│    └─ scoring.json   ← Scoring logic         │
+│    ├─ questions.json ← Unified question bank (53) │
+│    ├─ questions.private.json ← Optional local overlay │
+│    └─ sample-*.json  ← Example import snapshots │
 └──────────────────────────────────────────────┘
           │
           │ User's Browser
@@ -366,13 +363,20 @@ Status model for all questions:
 - `follow_up` = identified for future phase (score = 0.25)
 - `not_applicable` = does not apply to this organization (score = 0, excluded from denominator)
 
-Scoring model (unweighted, progress-aware):
+Scoring model (overall score remains unweighted, progress-aware):
 
 $$
 \text{overall} = \frac{\sum(\text{statusScore}) }{\text{count of applicable questions}}
 $$
 
 Where "applicable" excludes items marked `not_applicable`. This ensures orgs can opt out of irrelevant controls without penalty.
+
+Top recommended actions ranking (defensible priority ordering):
+1. Criticality (`high` > `medium` > `low`)
+2. Deployment lane (`first` > `then` > `later`)
+3. Status maturity score (lower score ranks as higher urgency)
+4. Question weight (higher weight first)
+5. Stable deterministic tie-break by ID
 
 | QID | Control ID | Assessment question | Criticality | Fail-state guidance |
 |---|---|---|---|---|
@@ -408,12 +412,11 @@ Each question should be stored with:
 - `sourceType`
 - `lastReviewed`
 
-Note: The `weight` field has been removed. All questions contribute equally to the overall score based on their status, independent of any priority weighting.
+Note: The `weight` field is used for top-actions tie-break prioritization, while overall readiness scoring remains unweighted and based on status progression.
 
 ### **Question Intake Backlog (from Security Workshops)**
 
-We maintain a backlog set of candidate questions captured from internal security
-reviews and workshops in `app/data/questions.backlog.v2.json`.
+We maintain a unified scored bank in `app/data/questions.json`. Legacy split files can still exist for historical context, but active app content is sourced from the unified bank.
 
 Intake rules:
 1. Backlog questions are not automatically part of scored Phase 1.
@@ -421,12 +424,12 @@ Intake rules:
 3. If a question is broad maturity-oriented, rewrite it into a Copilot-impact check.
 4. Keep the Copilot-only scope boundary (no broad M365 health sprawl).
 
-Promotion pipeline (backlog -> scored bank):
+Promotion pipeline (candidate -> unified scored bank):
 1. Normalize wording to yes/no/partial/not-sure where possible.
 2. Assign `controlId`, `criticality`, and `weight`.
 3. Attach `sourceUrl` + `sourceType` from official docs.
 4. Add remediation hint and workload ownership.
-5. Include in `questions.v1.json` only after source + scope review.
+5. Include in `questions.json` only after source + scope review.
 
 ### **Internal Source Handling (Non-Public Inputs)**
 
@@ -497,9 +500,9 @@ Promotion pipeline (backlog -> scored bank):
    - **Decision:** Start with 5 core; extend based on feedback
 
 4. **Scoring algorithm: Simple or nuanced?**
-   - Simple: % of complete items
-   - Nuanced: Weight by criticality (high-priority items matter more)
-   - **Decision:** Start simple (easy to understand); refine if users request
+   - Overall readiness: progress-aware and unweighted for explainability
+   - Top actions: risk-aware ranking with criticality + lane + status + weight
+   - **Decision:** Keep overall scoring simple, while tightening action prioritization for defensibility
 
 5. **Community model: OSS or closed?**
    - Open source on GitHub (accept PRs, community translations)
