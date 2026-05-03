@@ -1,0 +1,34 @@
+name: Deploy copilot-enablement to gh-pages
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'copilot-enablement/app/**'
+      - '.github/workflows/deploy-copilot-enablement.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: deploy-copilot-enablement-gh-pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Deploy app/ to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: ./copilot-enablement/app
+          force_orphan: true
