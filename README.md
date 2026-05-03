@@ -48,10 +48,11 @@ npx serve app -l 8080
 Then open http://localhost:8080/
 
 Usage notes:
-- By default, the app loads the 22-question core baseline focused on the most critical Copilot prerequisites.
-- To include an additional 25 backlog questions for deeper assessment, use the import feature to load one of the sample snapshots (`sample-pilot.json` or `sample-optimizing.json`) or import your own prior snapshot.
+- The app loads all 53 Copilot readiness assessment questions organized by deployment phase ("first," "then," "later")
+- Questions range from critical prerequisites to advanced post-launch governance topics
 - All status changes and notes are saved in browser memory. Download a JSON snapshot to persist progress.
-- Scoring is unweighted and progress-aware: items marked `Completed` or higher-progress statuses contribute more to overall readiness % than `Not Started` items.
+- Scoring is progress-aware: items marked `Completed` or higher-progress statuses contribute more to overall readiness % than `Not Started` items.
+- Each question links to relevant official Microsoft documentation for deeper guidance.
 
 ## Project Structure
 
@@ -65,8 +66,9 @@ copilot-enablement/
 │   ├── main.js         ← Assessment + scoring logic
 │   ├── style.css       ← Styling
 │   └── data/           ← Assessment content (JSON)
-│       ├── questions.v1.json         ← MVP scored question bank
-│       └── questions.backlog.v2.json ← Backlog from workshop/security intake
+│       ├── questions.json               ← Complete question bank (53 questions)
+│       ├── questions.private.json       ← Optional local overlay for custom questions
+│       └── sample-*.json                ← Sample snapshots for import/testing
 └── scripts/            ← Utility scripts (TBD)
 ```
 

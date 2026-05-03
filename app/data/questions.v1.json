@@ -147,7 +147,7 @@
       "criticality": "high",
       "weight": 8,
       "prompt": "Is unified audit logging enabled with retention aligned to compliance needs?",
-      "remediationHint": "Enable audit logging, define retention period, and establish recurring review ownership.",
+      "remediationHint": "Enable audit logging and establish recurring review ownership. For E5: configure custom retention policies aligned to regulatory requirements. For E3: default is 180-day retention.",
       "sourceUrl": "https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-setup#audit-logging"
     },
     {
@@ -259,6 +259,17 @@
       "prompt": "Have you reviewed Microsoft 365 Apps privacy and connected experiences settings for pilot users so Copilot features remain available?",
       "remediationHint": "Validate connected experiences and privacy settings on pilot devices so expected Copilot features are not unintentionally blocked.",
       "sourceUrl": "https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-requirements#review-app-privacy"
+    },
+    {
+      "id": "Q-023",
+      "controlId": "CPL-023",
+      "workload": "Data Governance",
+      "lane": "then",
+      "criticality": "high",
+      "weight": 8,
+      "prompt": "Have you reviewed data residency requirements and made governance decisions regarding Anthropic LLM usage and web search in Copilot?",
+      "remediationHint": "Document data residency requirements. Evaluate that Anthropic LLMs are not in EU Data Boundary and web search queries go to Bing. Disable web search or restrict Anthropic usage if needed for compliance.",
+      "sourceUrl": "https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-privacy"
     }
   ]
 }

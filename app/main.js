@@ -56,6 +56,9 @@ const el = {
   summaryTabScorecard: document.getElementById("summary-tab-scorecard"),
   summaryPaneTracker: document.getElementById("summary-pane-tracker"),
   summaryPaneScorecard: document.getElementById("summary-pane-scorecard"),
+  referencesBtn: document.getElementById("references-btn"),
+  referencesPanel: document.getElementById("references-panel"),
+  referencesCloseBtn: document.getElementById("references-close-btn"),
 };
 
 function setSummaryTab(tabKey) {
@@ -242,6 +245,17 @@ function closeDetailPanel() {
   document.querySelectorAll(".task-card.selected").forEach((card) => {
     card.classList.remove("selected");
   });
+}
+
+function openReferencesPanel() {
+  el.referencesPanel?.classList.remove("hidden");
+  el.referencesPanel?.setAttribute("aria-hidden", "false");
+  el.referencesPanel?.focus();
+}
+
+function closeReferencesPanel() {
+  el.referencesPanel?.classList.add("hidden");
+  el.referencesPanel?.setAttribute("aria-hidden", "true");
 }
 
 function renderQuestions() {
@@ -451,23 +465,11 @@ function renderResults() {
 
 
 async function loadQuestionBanks() {
-  const baseRes = await fetch("data/questions.v1.json");
-  if (!baseRes.ok) throw new Error("Unable to load base question bank.");
+  const baseRes = await fetch("data/questions.json");
+  if (!baseRes.ok) throw new Error("Unable to load question bank.");
 
-  const baseBank = await baseRes.json();
-  state.questionBanks.core = Array.isArray(baseBank.questions) ? baseBank.questions : [];
-
-  try {
-    const backlogRes = await fetch("data/questions.backlog.v2.json", { cache: "no-store" });
-    if (backlogRes.ok) {
-      const backlogBank = await backlogRes.json();
-      if (Array.isArray(backlogBank.questions)) {
-        state.questionBanks.backlog = backlogBank.questions;
-      }
-    }
-  } catch {
-    // Optional backlog load.
-  }
+  const questionBank = await baseRes.json();
+  state.questionBanks.core = Array.isArray(questionBank.questions) ? questionBank.questions : [];
 
   try {
     const privateRes = await fetch("data/questions.private.json", { cache: "no-store" });
@@ -583,9 +585,15 @@ function wireEvents() {
   });
 
   el.detailCloseBtn.addEventListener("click", closeDetailPanel);
+  el.referencesBtn?.addEventListener("click", openReferencesPanel);
+  el.referencesCloseBtn?.addEventListener("click", closeReferencesPanel);
   document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && state.selectedTaskId) {
-      closeDetailPanel();
+    if (event.key === "Escape") {
+      if (!el.referencesPanel?.classList.contains("hidden")) {
+        closeReferencesPanel();
+      } else if (state.selectedTaskId) {
+        closeDetailPanel();
+      }
     }
   });
 
