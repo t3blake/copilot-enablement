@@ -1,6 +1,6 @@
 {
   "exportVersion": "0.2",
-  "exportedAt": "2026-05-01T22:05:00Z",
+  "exportedAt": "2026-05-03T16:43:55Z",
   "includeBacklog": true,
   "responses": {
     "Q-001": {
@@ -135,20 +135,68 @@
       "lane": "",
       "status": "completed"
     },
+    "Q-023": {
+      "comment": "Control is active with optimization actions tracked to completion.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "completed"
+    },
+    "QB-101": {
+      "comment": "Control is active with optimization actions tracked to completion.",
+      "owner": "John Doe",
+      "lane": "",
+      "status": "completed"
+    },
+    "QB-102": {
+      "comment": "Control is active with optimization actions tracked to completion.",
+      "owner": "John Doe",
+      "lane": "",
+      "status": "completed"
+    },
     "QB-103": {
       "comment": "Data residency edge cases documented for select geos.",
       "owner": "Jane Doe",
       "lane": "",
-      "status": "in_progress"
+      "status": "completed"
     },
     "QB-104": {
       "comment": "Geo alignment remediation plan in flight for two workloads.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "completed"
+    },
+    "QB-105": {
+      "comment": "Control is active with optimization actions tracked to completion.",
+      "owner": "John Doe",
+      "lane": "",
+      "status": "completed"
+    },
+    "QB-107": {
+      "comment": "Control is active with optimization actions tracked to completion.",
+      "owner": "John Doe",
+      "lane": "",
+      "status": "in_progress"
+    },
+    "QB-111": {
+      "comment": "Control is active with optimization actions tracked to completion.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "completed"
+    },
+    "QB-112": {
+      "comment": "Control is active with optimization actions tracked to completion.",
       "owner": "Jane Doe",
       "lane": "",
       "status": "in_progress"
     },
     "QB-113": {
       "comment": "Label coverage improving; long-tail legacy repositories still being addressed.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "completed"
+    },
+    "QB-114": {
+      "comment": "Control is active with optimization actions tracked to completion.",
       "owner": "Jane Doe",
       "lane": "",
       "status": "in_progress"
@@ -159,8 +207,50 @@
       "lane": "",
       "status": "completed"
     },
+    "QB-118": {
+      "comment": "Advanced governance capability planned in the next optimization cycle.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "in_progress"
+    },
+    "QB-119": {
+      "comment": "Advanced governance capability planned in the next optimization cycle.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "in_progress"
+    },
+    "QB-120": {
+      "comment": "Advanced governance capability planned in the next optimization cycle.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "completed"
+    },
+    "QB-121": {
+      "comment": "Advanced governance capability planned in the next optimization cycle.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "in_progress"
+    },
     "QB-122": {
       "comment": "eDiscovery workflows operational for priority incident types.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "completed"
+    },
+    "QB-123": {
+      "comment": "Advanced governance capability planned in the next optimization cycle.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "completed"
+    },
+    "QB-124": {
+      "comment": "Advanced governance capability planned in the next optimization cycle.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "completed"
+    },
+    "QB-127": {
+      "comment": "Advanced governance capability planned in the next optimization cycle.",
       "owner": "Jane Doe",
       "lane": "",
       "status": "completed"
@@ -177,6 +267,18 @@
       "lane": "",
       "status": "completed"
     },
+    "QB-132": {
+      "comment": "Control is active with optimization actions tracked to completion.",
+      "owner": "John Doe",
+      "lane": "",
+      "status": "in_progress"
+    },
+    "QB-133": {
+      "comment": "Control implemented and monitored as part of production baseline.",
+      "owner": "John Doe",
+      "lane": "",
+      "status": "in_progress"
+    },
     "QB-134": {
       "comment": "Archiving governance in place; automation coverage expansion planned.",
       "owner": "John Doe",
@@ -188,9 +290,39 @@
       "owner": "John Doe",
       "lane": "",
       "status": "in_progress"
+    },
+    "Q-024": {
+      "comment": "Advanced governance capability planned in the next optimization cycle.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "in_progress"
+    },
+    "Q-025": {
+      "comment": "Advanced governance capability planned in the next optimization cycle.",
+      "owner": "John Doe",
+      "lane": "",
+      "status": "in_progress"
+    },
+    "Q-026": {
+      "comment": "Advanced governance capability planned in the next optimization cycle.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "in_progress"
+    },
+    "Q-027": {
+      "comment": "Advanced governance capability planned in the next optimization cycle.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "in_progress"
+    },
+    "Q-028": {
+      "comment": "Advanced governance capability planned in the next optimization cycle.",
+      "owner": "John Doe",
+      "lane": "",
+      "status": "in_progress"
     }
   },
   "results": {
-    "note": "Sample snapshot for an organization in late-stage optimization."
+    "note": "Sample snapshot for an organization mostly in production, optimizing later-phase governance."
   }
 }

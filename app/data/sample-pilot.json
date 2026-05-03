@@ -1,6 +1,6 @@
 {
   "exportVersion": "0.2",
-  "exportedAt": "2026-05-01T22:00:00Z",
+  "exportedAt": "2026-05-03T16:43:55Z",
   "includeBacklog": false,
   "responses": {
     "Q-001": {
@@ -31,7 +31,7 @@
       "comment": "Feature Updates scheduled task currently disabled by endpoint baseline.",
       "owner": "Pat Taylor",
       "lane": "",
-      "status": "not_started"
+      "status": "in_planning"
     },
     "Q-006": {
       "comment": "Admins are covered; some pilot users still on temporary MFA exceptions.",
@@ -43,13 +43,13 @@
       "comment": "Conditional Access baseline not fully enforced yet.",
       "owner": "Jane Doe",
       "lane": "",
-      "status": "not_started"
+      "status": "in_planning"
     },
     "Q-008": {
       "comment": "Interim oversharing protections not yet applied to known high-risk sites.",
       "owner": "Jane Doe",
       "lane": "",
-      "status": "not_started"
+      "status": "in_planning"
     },
     "Q-009": {
       "comment": "External sharing baseline is being inventoried.",
@@ -73,7 +73,7 @@
       "comment": "Unified audit logging is enabled with default retention.",
       "owner": "Jane Doe",
       "lane": "",
-      "status": "completed"
+      "status": "in_progress"
     },
     "Q-013": {
       "comment": "Teams recording/transcription settings are inconsistent across groups.",
@@ -85,7 +85,7 @@
       "comment": "Loop/Whiteboard Copilot scenarios not yet in pilot scope.",
       "owner": "John Doe",
       "lane": "",
-      "status": "follow_up"
+      "status": "not_started"
     },
     "Q-015": {
       "comment": "Pilot ring and champions identified in Sales, Finance, and HR.",
@@ -97,13 +97,13 @@
       "comment": "Enablement assets drafted; launch communications still pending review.",
       "owner": "John Doe",
       "lane": "",
-      "status": "in_progress"
+      "status": "follow_up"
     },
     "Q-017": {
       "comment": "DSPM/SharePoint risk assessment has not been run yet.",
       "owner": "Jane Doe",
       "lane": "",
-      "status": "not_started"
+      "status": "in_planning"
     },
     "Q-018": {
       "comment": "Test environment established for pilot validation.",
@@ -121,22 +121,208 @@
       "comment": "Baseline device compliance exists; app protection policies still being tuned.",
       "owner": "Pat Taylor",
       "lane": "",
-      "status": "in_progress"
+      "status": "not_started"
     },
     "Q-021": {
       "comment": "Retention and investigation requirements are not formally defined.",
       "owner": "Jane Doe",
       "lane": "",
-      "status": "follow_up"
+      "status": "not_started"
     },
     "Q-022": {
       "comment": "App privacy and connected experiences reviewed for most pilot devices.",
       "owner": "Pat Taylor",
       "lane": "",
       "status": "in_progress"
+    },
+    "Q-023": {
+      "comment": "Tracked as post-pilot hardening work before broad deployment.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "not_started"
+    },
+    "QB-101": {
+      "comment": "Tracked as post-pilot hardening work before broad deployment.",
+      "owner": "John Doe",
+      "lane": "",
+      "status": "not_started"
+    },
+    "QB-102": {
+      "comment": "Tracked as post-pilot hardening work before broad deployment.",
+      "owner": "John Doe",
+      "lane": "",
+      "status": "not_started"
+    },
+    "QB-103": {
+      "comment": "Tracked as post-pilot hardening work before broad deployment.",
+      "owner": "John Doe",
+      "lane": "",
+      "status": "not_started"
+    },
+    "QB-104": {
+      "comment": "Tracked as post-pilot hardening work before broad deployment.",
+      "owner": "John Doe",
+      "lane": "",
+      "status": "not_started"
+    },
+    "QB-105": {
+      "comment": "Tracked as post-pilot hardening work before broad deployment.",
+      "owner": "John Doe",
+      "lane": "",
+      "status": "not_started"
+    },
+    "QB-107": {
+      "comment": "Tracked as post-pilot hardening work before broad deployment.",
+      "owner": "John Doe",
+      "lane": "",
+      "status": "not_started"
+    },
+    "QB-111": {
+      "comment": "Tracked as post-pilot hardening work before broad deployment.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "not_started"
+    },
+    "QB-112": {
+      "comment": "Tracked as post-pilot hardening work before broad deployment.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "not_started"
+    },
+    "QB-113": {
+      "comment": "Captured for later-phase governance after initial rollout stabilization.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "not_started"
+    },
+    "QB-114": {
+      "comment": "Tracked as post-pilot hardening work before broad deployment.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "not_started"
+    },
+    "QB-117": {
+      "comment": "Captured for later-phase governance after initial rollout stabilization.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "not_started"
+    },
+    "QB-118": {
+      "comment": "Captured for later-phase governance after initial rollout stabilization.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "not_started"
+    },
+    "QB-119": {
+      "comment": "Captured for later-phase governance after initial rollout stabilization.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "not_started"
+    },
+    "QB-120": {
+      "comment": "Captured for later-phase governance after initial rollout stabilization.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "not_started"
+    },
+    "QB-121": {
+      "comment": "Captured for later-phase governance after initial rollout stabilization.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "not_started"
+    },
+    "QB-122": {
+      "comment": "Captured for later-phase governance after initial rollout stabilization.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "not_started"
+    },
+    "QB-123": {
+      "comment": "Captured for later-phase governance after initial rollout stabilization.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "not_started"
+    },
+    "QB-124": {
+      "comment": "Captured for later-phase governance after initial rollout stabilization.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "not_started"
+    },
+    "QB-127": {
+      "comment": "Captured for later-phase governance after initial rollout stabilization.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "not_started"
+    },
+    "QB-128": {
+      "comment": "Captured for later-phase governance after initial rollout stabilization.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "not_started"
+    },
+    "QB-131": {
+      "comment": "Tracked as post-pilot hardening work before broad deployment.",
+      "owner": "John Doe",
+      "lane": "",
+      "status": "not_started"
+    },
+    "QB-132": {
+      "comment": "Tracked as post-pilot hardening work before broad deployment.",
+      "owner": "John Doe",
+      "lane": "",
+      "status": "not_started"
+    },
+    "QB-133": {
+      "comment": "Baseline readiness activity identified and scheduled for pilot closure.",
+      "owner": "John Doe",
+      "lane": "",
+      "status": "in_planning"
+    },
+    "QB-134": {
+      "comment": "Captured for later-phase governance after initial rollout stabilization.",
+      "owner": "John Doe",
+      "lane": "",
+      "status": "not_started"
+    },
+    "QB-135": {
+      "comment": "Captured for later-phase governance after initial rollout stabilization.",
+      "owner": "John Doe",
+      "lane": "",
+      "status": "not_started"
+    },
+    "Q-024": {
+      "comment": "Captured for later-phase governance after initial rollout stabilization.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "not_started"
+    },
+    "Q-025": {
+      "comment": "Captured for later-phase governance after initial rollout stabilization.",
+      "owner": "John Doe",
+      "lane": "",
+      "status": "not_started"
+    },
+    "Q-026": {
+      "comment": "Captured for later-phase governance after initial rollout stabilization.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "not_started"
+    },
+    "Q-027": {
+      "comment": "Captured for later-phase governance after initial rollout stabilization.",
+      "owner": "Jane Doe",
+      "lane": "",
+      "status": "not_started"
+    },
+    "Q-028": {
+      "comment": "Captured for later-phase governance after initial rollout stabilization.",
+      "owner": "John Doe",
+      "lane": "",
+      "status": "not_started"
     }
   },
   "results": {
-    "note": "Sample snapshot for an early pilot stage organization."
+    "note": "Sample snapshot for an organization just starting a pilot."
   }
 }
