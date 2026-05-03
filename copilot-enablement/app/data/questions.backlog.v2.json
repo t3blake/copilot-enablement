@@ -22,21 +22,21 @@
       "id": "QB-103",
       "topic": "Data Residency",
       "workload": "Copilot and Business Data",
-      "lane": "later",
+      "lane": "then",
       "prompt": "What are your data residency requirements?"
     },
     {
       "id": "QB-104",
       "topic": "Data Residency",
       "workload": "Copilot and Business Data",
-      "lane": "later",
+      "lane": "then",
       "prompt": "Do your current tenant geographic locations align with these requirements?"
     },
     {
       "id": "QB-105",
       "topic": "Data Residency",
       "workload": "Copilot and Business Data",
-      "lane": "later",
+      "lane": "then",
       "prompt": "In your multi-geo environment, do you have requirements to host groups or sites in specific data locations?"
     },
     {
@@ -178,6 +178,56 @@
       "workload": "Data Sharing",
       "lane": "later",
       "prompt": "What is your process maturity for deleting or archiving stale or irrelevant repositories?"
+    },
+    {
+      "id": "Q-024",
+      "topic": "Insider Risk Management",
+      "workload": "Compliance",
+      "lane": "later",
+      "criticality": "medium",
+      "prompt": "Have you enabled Microsoft Purview Insider Risk Management to monitor for anomalous Copilot usage patterns? (E5 only)",
+      "remediationHint": "Enable Insider Risk Management in Microsoft Purview and create policies to detect unusual Copilot interactions with sensitive data. Note: E5 license required.",
+      "sourceUrl": "https://learn.microsoft.com/en-us/purview/insider-risk-management-solution-overview"
+    },
+    {
+      "id": "Q-025",
+      "topic": "Adoption Measurement",
+      "workload": "Adoption",
+      "lane": "later",
+      "criticality": "medium",
+      "prompt": "Have you set up Viva Insights Copilot Dashboard to measure adoption metrics, usage trends, and business impact?",
+      "remediationHint": "Access the Copilot Dashboard in Viva Insights to track user adoption rates, feature usage, NPS scores, and business outcomes during the Operate phase.",
+      "sourceUrl": "https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-setup#operate"
+    },
+    {
+      "id": "Q-026",
+      "topic": "Ongoing Governance Monitoring",
+      "workload": "Compliance",
+      "lane": "later",
+      "criticality": "medium",
+      "prompt": "Have you established ongoing governance monitoring activities (weekly DLP review, monthly audit analysis, quarterly compliance assessment)?",
+      "remediationHint": "Assign ownership for regular governance reviews: DLP alerts weekly, audit logs monthly, governance maturity and security posture quarterly.",
+      "sourceUrl": "https://learn.microsoft.com/en-us/microsoft-365/copilot/configure-secure-governed-data-foundation-microsoft-365-copilot"
+    },
+    {
+      "id": "Q-027",
+      "topic": "AI Regulation Compliance",
+      "workload": "Compliance",
+      "lane": "later",
+      "criticality": "medium",
+      "prompt": "Have you reviewed AI regulation requirements using Microsoft Purview Compliance Manager (for organizations subject to EU AI Act, GDPR Article 22, or industry-specific AI regulations)?",
+      "remediationHint": "Use Compliance Manager to assess compliance gaps related to AI regulations and track remediation progress. Particularly important for EU organizations, healthcare, and finance sectors.",
+      "sourceUrl": "https://learn.microsoft.com/en-us/purview/compliance-manager"
+    },
+    {
+      "id": "Q-028",
+      "topic": "Content Accuracy & Quality",
+      "workload": "Governance",
+      "lane": "later",
+      "criticality": "medium",
+      "prompt": "Have you established user feedback and review processes to identify and address inaccurate or hallucinated Copilot responses?",
+      "remediationHint": "Create processes for users to report inaccurate responses and for admins to review feedback trends to identify systemic accuracy issues that may impact user trust or compliance.",
+      "sourceUrl": "https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-privacy"
     }
   ]
 }

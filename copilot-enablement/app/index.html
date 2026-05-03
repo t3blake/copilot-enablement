@@ -17,6 +17,14 @@
         <h1>Microsoft 365 Copilot Readiness Tracker</h1>
       </div>
       <div class="topbar-actions">
+        <button
+          id="references-btn"
+          class="btn btn-secondary"
+          aria-label="View official Microsoft documentation and references"
+          title="Official Microsoft Guidance"
+        >
+          References
+        </button>
         <a
           class="icon-link"
           href="https://github.com/t3blake/copilot-enablement"
@@ -144,6 +152,82 @@
                 <option value="then">Then</option>
                 <option value="later">Later</option>
               </select>
+            </div>
+          </div>
+        </section>
+
+        <section id="references-panel" class="references-panel hidden" aria-hidden="true">
+          <div class="references-header">
+            <h2>Official Microsoft Guidance</h2>
+            <button id="references-close-btn" class="references-close" aria-label="Close references panel">×</button>
+          </div>
+          <div class="references-body">
+            <div class="references-intro">
+              <p>The Copilot Enablement Hub is built on <strong>official Microsoft documentation</strong>. Use these resources for comprehensive deployment guidance:</p>
+            </div>
+            
+            <div class="references-sections">
+              <div class="reference-section">
+                <h3>Core Microsoft Learn Resources</h3>
+                <ul>
+                  <li><a href="https://learn.microsoft.com/en-us/microsoft-365/copilot/" target="_blank" rel="noopener noreferrer">Microsoft 365 Copilot Documentation ↗</a></li>
+                  <li><a href="https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-setup" target="_blank" rel="noopener noreferrer">Setup & Deploy Copilot ↗</a></li>
+                  <li><a href="https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-requirements" target="_blank" rel="noopener noreferrer">Prerequisites & Requirements ↗</a></li>
+                  <li><a href="https://learn.microsoft.com/en-us/microsoft-365/copilot/configure-secure-governed-data-foundation-microsoft-365-copilot" target="_blank" rel="noopener noreferrer">Secure & Governed Data Foundation ↗</a></li>
+                </ul>
+              </div>
+
+              <div class="reference-section">
+                <h3>Data Protection & Compliance</h3>
+                <ul>
+                  <li><a href="https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-architecture-data-protection-auditing" target="_blank" rel="noopener noreferrer">Data Protection & Auditing Architecture ↗</a></li>
+                  <li><a href="https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-privacy" target="_blank" rel="noopener noreferrer">Privacy & Data Security ↗</a></li>
+                  <li><a href="https://learn.microsoft.com/en-us/microsoft-365/copilot/enterprise-data-protection" target="_blank" rel="noopener noreferrer">Enterprise Data Protection ↗</a></li>
+                  <li><a href="https://learn.microsoft.com/en-us/purview/get-started-with-sensitivity-labels" target="_blank" rel="noopener noreferrer">Sensitivity Labels ↗</a></li>
+                  <li><a href="https://learn.microsoft.com/en-us/purview/dlp-learn-about-dlp" target="_blank" rel="noopener noreferrer">Data Loss Prevention (DLP) ↗</a></li>
+                </ul>
+              </div>
+
+              <div class="reference-section">
+                <h3>Identity & Zero Trust</h3>
+                <ul>
+                  <li><a href="https://learn.microsoft.com/en-us/security/zero-trust/copilots/zero-trust-microsoft-365-copilot" target="_blank" rel="noopener noreferrer">Zero Trust for Microsoft 365 Copilot ↗</a></li>
+                  <li><a href="https://learn.microsoft.com/en-us/entra/identity/conditional-access/overview" target="_blank" rel="noopener noreferrer">Conditional Access ↗</a></li>
+                  <li><a href="https://learn.microsoft.com/en-us/entra/identity/authentication/concept-mfa-howitworks" target="_blank" rel="noopener noreferrer">Multi-Factor Authentication ↗</a></li>
+                </ul>
+              </div>
+
+              <div class="reference-section">
+                <h3>Adoption & Governance</h3>
+                <ul>
+                  <li><a href="https://adoption.microsoft.com/en-us/copilot/" target="_blank" rel="noopener noreferrer">Microsoft Adoption Hub - Copilot ↗</a></li>
+                  <li><a href="https://adoption.microsoft.com/copilot/skilling-center/" target="_blank" rel="noopener noreferrer">Copilot Skilling Center ↗</a></li>
+                  <li><a href="https://learn.microsoft.com/en-us/purview/insider-risk-management-solution-overview" target="_blank" rel="noopener noreferrer">Insider Risk Management ↗</a></li>
+                  <li><a href="https://learn.microsoft.com/en-us/purview/compliance-manager" target="_blank" rel="noopener noreferrer">Compliance Manager ↗</a></li>
+                </ul>
+              </div>
+
+              <div class="reference-section">
+                <h3>Compliance & Retention</h3>
+                <ul>
+                  <li><a href="https://learn.microsoft.com/en-us/purview/audit-search" target="_blank" rel="noopener noreferrer">Audit Logging & Search ↗</a></li>
+                  <li><a href="https://learn.microsoft.com/en-us/purview/retention-policies-copilot" target="_blank" rel="noopener noreferrer">Retention Policies for Copilot ↗</a></li>
+                  <li><a href="https://learn.microsoft.com/en-us/purview/create-retention-policies" target="_blank" rel="noopener noreferrer">Create Retention Policies ↗</a></li>
+                  <li><a href="https://learn.microsoft.com/en-us/purview/communication-compliance-solution-overview" target="_blank" rel="noopener noreferrer">Communication Compliance ↗</a></li>
+                </ul>
+              </div>
+
+              <div class="reference-section">
+                <h3>Deployment & Configuration</h3>
+                <ul>
+                  <li><a href="https://learn.microsoft.com/en-us/microsoft-365-apps/updates/change-channel-for-copilot" target="_blank" rel="noopener noreferrer">Update Channels for Copilot ↗</a></li>
+                  <li><a href="https://learn.microsoft.com/en-us/microsoftteams/copilot-teams-transcription" target="_blank" rel="noopener noreferrer">Copilot in Teams Meetings ↗</a></li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="references-footer">
+              <p><strong>Note:</strong> This tracker uses <strong>official Microsoft sources only</strong> (Microsoft Learn, Adoption Hub, Zero Trust Guidance). Click any question's "More Info" link for specific guidance on that topic.</p>
             </div>
           </div>
         </section>
