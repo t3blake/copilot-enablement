@@ -79,6 +79,12 @@ function criticalityRank(value) {
   return 1;
 }
 
+function laneRank(value) {
+  if (value === "first") return 1;
+  if (value === "then") return 2;
+  return 3;
+}
+
 function getInfoUrl(question) {
   const sourceUrl = String(question?.sourceUrl || "").trim();
   if (!/^https?:\/\//i.test(sourceUrl)) return "";
@@ -91,12 +97,14 @@ function normalizeQuestion(rawQuestion, fallbackIndex) {
       ? rawQuestion.criticality
       : "medium";
   const safeDefaultLane = LANE_ORDER.includes(rawQuestion.lane) ? rawQuestion.lane : "";
+  const safeWeight = Number.isFinite(Number(rawQuestion.weight)) ? Number(rawQuestion.weight) : 0;
 
   return {
     id: rawQuestion.id || `QX-${fallbackIndex + 1}`,
     controlId: rawQuestion.controlId || null,
     workload: rawQuestion.workload || rawQuestion.topic || "General",
     criticality: safeCriticality,
+    weight: safeWeight,
     prompt: rawQuestion.prompt || "Question text unavailable.",
     remediationHint:
       rawQuestion.remediationHint ||
@@ -378,14 +386,31 @@ function computeResults() {
       const response = getResponse(q.id);
       const status = response.status || "not_reviewed";
       const meta = STATUS_META[status] || STATUS_META.not_reviewed;
-      return { q, response, status, meta, score: statusScore(status) };
+      return {
+        q,
+        response,
+        status,
+        meta,
+        score: statusScore(status),
+        lane: getLaneForQuestion(q),
+        weight: Number.isFinite(Number(q.weight)) ? Number(q.weight) : 0,
+      };
     })
     .filter((x) => x.meta.applicable && x.status !== "completed")
     .sort((a, b) => {
       if (a.q.criticality !== b.q.criticality) {
         return criticalityRank(b.q.criticality) - criticalityRank(a.q.criticality);
       }
-      return a.score - b.score;
+      if (a.lane !== b.lane) {
+        return laneRank(a.lane) - laneRank(b.lane);
+      }
+      if (a.score !== b.score) {
+        return a.score - b.score;
+      }
+      if (a.weight !== b.weight) {
+        return b.weight - a.weight;
+      }
+      return String(a.q.id).localeCompare(String(b.q.id));
     });
 
   const highGapCount = gaps.filter((x) => x.q.criticality === "high").length;
