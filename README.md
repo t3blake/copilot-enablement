@@ -17,8 +17,10 @@ while linking to deeper official guidance when needed.
 1. **Track progress across 53 Copilot-readiness controls** in a visual grid organized by workload and execution lane
 2. **Assign status to each item** (Not Started, In Progress, Completed, Blocked, etc.) and track progression from planning to completion
 3. **See real-time scoring** showing overall readiness and per-workload progress based on your status selections
-4. **Download JSON snapshots** to save/share progress and re-import them later to continue or compare over time
-5. **Open official Microsoft references in-app** via the References panel, with links grouped by deployment domain
+4. **Download JSON or CSV snapshots** to save/share progress and re-import them later to continue or compare over time
+5. **Move work into Microsoft Planner** — the CSV export matches Planner Premium's native import format; a PowerShell script ([`scripts/`](scripts/README.md)) covers Planner Basic customers via Microsoft Graph
+6. **Open official Microsoft references in-app** via the References panel, with links grouped by deployment domain
+7. **Built-in Help &amp; Tips** panel covers Planner import, owner conventions, scoring, and privacy
 
 ## Scope Guardrail
 
@@ -64,13 +66,15 @@ copilot-enablement/
 ├── .gitignore          ← Protect local-only overlays and snapshots
 ├── app/                ← Web app files
 │   ├── index.html      ← Main page shell
-│   ├── main.js         ← Assessment + scoring logic
+│   ├── main.js         ← Assessment + scoring + CSV/JSON I/O
 │   ├── style.css       ← Styling
 │   └── data/           ← Assessment content (JSON)
 │       ├── questions.json               ← Complete question bank (53 questions)
 │       ├── questions.private.json       ← Optional local overlay for custom questions
 │       └── sample-*.json                ← Importable snapshots (early pilot and optimization profiles)
-└── scripts/            ← Utility scripts (TBD)
+└── scripts/            ← Microsoft Planner export via Graph (for Planner Basic customers)
+    ├── Sync-PlannerFromSnapshot.ps1
+    └── README.md
 ```
 
 ## Publish to GitHub Pages

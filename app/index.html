@@ -25,6 +25,17 @@
         >
           References
         </button>
+        <button
+          id="help-btn"
+          class="icon-link icon-button"
+          type="button"
+          aria-label="Open help and tips"
+          title="Help & tips (Planner import, owner conventions, etc.)"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10 10-4.486 10-10S17.514 2 12 2Zm0 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16Zm-1-5h2v2h-2v-2Zm1.61-9.96c-2.06-.3-3.88.97-4.43 2.79a1 1 0 1 0 1.92.56c.24-.8 1.01-1.32 1.92-1.18.86.13 1.51.86 1.55 1.73.04.81-.5 1.55-1.39 1.78-1.07.27-1.79 1.18-1.79 2.27V13h2v-.02c0-.27.18-.51.42-.57 1.66-.42 2.81-1.98 2.74-3.71-.06-1.74-1.36-3.22-3.06-3.47.05-.13.11-.15.12-.18Z" />
+          </svg>
+        </button>
         <a
           class="icon-link"
           href="https://github.com/t3blake/copilot-enablement"
@@ -43,10 +54,11 @@
     <main class="shell">
         <section class="control-strip">
           <div class="panel-row compact">
-            <button id="clear-answers-btn" class="btn btn-warning">Clear Answers</button>
-            <button id="download-json-btn" class="btn btn-primary">Export JSON</button>
-            <label class="btn btn-primary file-btn" for="import-file">Import JSON</label>
-            <input id="import-file" type="file" accept="application/json" />
+            <button id="clear-answers-btn" class="btn btn-warning" title="Erase all status, notes, owners, and lane overrides for this session">Clear Answers</button>
+            <button id="download-json-btn" class="btn btn-primary" title="Save the full snapshot (recommended for restoring your progress later)">Export JSON</button>
+            <button id="download-csv-btn" class="btn btn-primary" title="Download a CSV formatted for Microsoft Planner import / Excel review">Export CSV</button>
+            <label class="btn btn-primary file-btn" for="import-file" title="Import a previously exported JSON or CSV file">Import</label>
+            <input id="import-file" type="file" accept=".json,.csv,application/json,text/csv" />
           </div>
           <p id="import-feedback" class="import-feedback" role="status" aria-live="polite"></p>
         </section>
@@ -228,6 +240,74 @@
 
             <div class="references-footer">
               <p><strong>Note:</strong> This tracker uses <strong>official Microsoft sources only</strong> (Microsoft Learn, Adoption Hub, Zero Trust Guidance). Click any question's "More Info" link for specific guidance on that topic.</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="help-panel" class="references-panel hidden" aria-hidden="true" tabindex="-1">
+          <div class="references-header">
+            <h2>Help &amp; Tips</h2>
+            <button id="help-close-btn" class="references-close" aria-label="Close help panel">×</button>
+          </div>
+          <div class="references-body">
+            <div class="references-intro">
+              <p>Quick answers for using this tracker effectively. Your data never leaves your browser unless you choose to export it.</p>
+            </div>
+
+            <div class="references-sections">
+              <div class="reference-section">
+                <h3>Getting started</h3>
+                <p>Pick a question in the grid, set its status, add notes and an owner. Scoring updates live. The grid is organized by <strong>workload</strong> (rows) and <strong>deployment lane</strong> (First / Then / Later columns).</p>
+              </div>
+
+              <div class="reference-section">
+                <h3>Save &amp; restore your progress</h3>
+                <p><strong>Export JSON</strong> — the fidelity format. Use this to save a snapshot you'll re-import later, share with another teammate using the app, or commit to source control for review.</p>
+                <p><strong>Export CSV</strong> — the interop format. Use this to import into Microsoft Planner, review in Excel, or hand to a non-technical stakeholder.</p>
+                <p><strong>Import</strong> accepts either format. It auto-detects by file extension.</p>
+                <p class="help-callout">⚠️ If you edit the CSV in Excel and save, be careful not to remove or rename the <code>Question ID</code> column &mdash; it's required for import to map rows back to questions.</p>
+              </div>
+
+              <div class="reference-section">
+                <h3>Move work into Microsoft Planner</h3>
+                <ol class="help-steps">
+                  <li>Click <strong>Export CSV</strong>.</li>
+                  <li><strong>Planner Premium / Project Plan 3 customers:</strong> In Planner, choose <em>New plan</em> → <em>Import from Excel</em> and upload the file. Buckets, priorities, progress, labels, and notes populate from the CSV.</li>
+                  <li><strong>Planner Basic customers:</strong> Native CSV import is not available. Open the CSV in Excel as a working list, or create buckets manually using the <em>Bucket Name</em> column as a guide. The <a href="#" id="help-ps-script-link">PowerShell script in this repo</a> can also create the Planner tasks via Microsoft Graph if you have admin access.</li>
+                </ol>
+                <p><strong>Column mapping:</strong></p>
+                <ul class="help-mapping">
+                  <li><code>Task Name</code> ← question prompt</li>
+                  <li><code>Bucket Name</code> ← workload (Identity, Apps, Network, …)</li>
+                  <li><code>Priority</code> ← criticality (high → Urgent, medium → Medium, low → Low)</li>
+                  <li><code>Progress</code> ← status (mapped to Planner's 3-state model)</li>
+                  <li><code>Assigned To</code> ← owner (see next section)</li>
+                  <li><code>Labels</code> ← deployment lane (First / Then / Later)</li>
+                  <li><code>Notes</code> ← remediation hint + reference link + your notes</li>
+                </ul>
+              </div>
+
+              <div class="reference-section">
+                <h3>Owner names &amp; Planner assignment</h3>
+                <p>Planner can only auto-assign tasks when the <em>Assigned To</em> value matches an Entra display name or email in your tenant. For best results, enter owners as their full display name (e.g., <code>Jane Doe</code>) or UPN (<code>jane.doe@contoso.com</code>).</p>
+                <p>If a name doesn't match, Planner leaves the task unassigned &mdash; no error, but you'll need to assign it manually.</p>
+              </div>
+
+              <div class="reference-section">
+                <h3>How scoring works</h3>
+                <p>Scoring is <strong>progress-aware</strong>: items marked <em>Completed</em> contribute fully, <em>In Progress</em> partially, <em>Not Started</em> not at all. <em>Not Applicable</em> is excluded from the denominator.</p>
+                <p>Top Recommended Actions are ranked by criticality first, then deployment lane, then status maturity, then weight.</p>
+              </div>
+
+              <div class="reference-section">
+                <h3>Privacy</h3>
+                <p>Nothing leaves your browser. There is no server-side storage, no telemetry, and no account required. Snapshots are local downloads only.</p>
+              </div>
+
+              <div class="reference-section">
+                <h3>Found a bug or want to suggest a question?</h3>
+                <p><a href="https://github.com/t3blake/copilot-enablement/issues" target="_blank" rel="noopener noreferrer">Open an issue on GitHub ↗</a></p>
+              </div>
             </div>
           </div>
         </section>

@@ -59,6 +59,10 @@ const el = {
   referencesBtn: document.getElementById("references-btn"),
   referencesPanel: document.getElementById("references-panel"),
   referencesCloseBtn: document.getElementById("references-close-btn"),
+  downloadCsvBtn: document.getElementById("download-csv-btn"),
+  helpBtn: document.getElementById("help-btn"),
+  helpPanel: document.getElementById("help-panel"),
+  helpCloseBtn: document.getElementById("help-close-btn"),
 };
 
 function setSummaryTab(tabKey) {
@@ -264,6 +268,17 @@ function openReferencesPanel() {
 function closeReferencesPanel() {
   el.referencesPanel?.classList.add("hidden");
   el.referencesPanel?.setAttribute("aria-hidden", "true");
+}
+
+function openHelpPanel() {
+  el.helpPanel?.classList.remove("hidden");
+  el.helpPanel?.setAttribute("aria-hidden", "false");
+  el.helpPanel?.focus();
+}
+
+function closeHelpPanel() {
+  el.helpPanel?.classList.add("hidden");
+  el.helpPanel?.setAttribute("aria-hidden", "true");
 }
 
 function renderQuestions() {
@@ -561,31 +576,292 @@ function downloadSnapshot() {
     results: computeResults(),
   };
 
-  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-  const anchor = document.createElement("a");
-  anchor.href = url;
-  anchor.download = "copilot-readiness-tracker-snapshot.json";
-  anchor.click();
-  URL.revokeObjectURL(url);
+  triggerDownload(
+    JSON.stringify(payload, null, 2),
+    "application/json",
+    "copilot-readiness-tracker-snapshot.json",
+  );
+}
+
+// --- CSV helpers ---------------------------------------------------------
+
+// Planner-compatible column order. Planner Premium import ignores unknown
+// columns, so trailing "internal" columns are safe to include for round-trip.
+const CSV_COLUMNS = [
+  "Task Name",
+  "Bucket Name",
+  "Priority",
+  "Progress",
+  "Assigned To",
+  "Labels",
+  "Notes",
+  "Start Date",
+  "Due Date",
+  // Internal columns (used for round-trip; Planner ignores them):
+  "Question ID",
+  "Status",
+  "Lane Override",
+  "Owner",
+];
+
+const STATUS_TO_PLANNER_PROGRESS = {
+  not_reviewed: "Not started",
+  not_started: "Not started",
+  in_planning: "Not started",
+  planned: "Not started",
+  in_progress: "In progress",
+  completed: "Completed",
+  blocked: "In progress",
+  first_party_other: "In progress",
+  third_party: "In progress",
+  will_not_pursue: "Completed",
+  ms_roadmap: "Not started",
+  follow_up: "In progress",
+  not_applicable: "Completed",
+};
+
+const CRITICALITY_TO_PLANNER_PRIORITY = {
+  high: "Urgent",
+  medium: "Medium",
+  low: "Low",
+};
+
+const LANE_LABEL = {
+  first: "First",
+  then: "Then",
+  later: "Later",
+};
+
+function csvEscape(value) {
+  const str = value == null ? "" : String(value);
+  if (/[",\r\n]/.test(str)) {
+    return `"${str.replace(/"/g, '""')}"`;
+  }
+  return str;
+}
+
+function buildCsvRow(question, response) {
+  const status = response.status || "not_reviewed";
+  const isBlocked = status === "blocked";
+  const titleRaw = question.prompt || "(untitled)";
+  // Planner has a 255-char title limit
+  const title = (isBlocked ? "[BLOCKED] " : "") + titleRaw.slice(0, 240);
+  const bucket = question.workload || "General";
+  const priority =
+    CRITICALITY_TO_PLANNER_PRIORITY[question.criticality] || "Medium";
+  const progress = STATUS_TO_PLANNER_PROGRESS[status] || "Not started";
+  const assignedTo = response.owner || "";
+  const laneSource = response.lane || question.lane || "";
+  const labelParts = [];
+  if (LANE_LABEL[laneSource]) labelParts.push(LANE_LABEL[laneSource]);
+  if (question.criticality === "high") labelParts.push("High criticality");
+  const labels = labelParts.join(";");
+
+  const noteParts = [];
+  if (question.remediationHint) noteParts.push(question.remediationHint);
+  if (question.sourceUrl) noteParts.push(`Reference: ${question.sourceUrl}`);
+  if (response.comment) noteParts.push(`Notes: ${response.comment}`);
+  noteParts.push(`Status: ${STATUS_META[status]?.label || status}`);
+  const notes = noteParts.join("\n\n");
+
+  return [
+    title,
+    bucket,
+    priority,
+    progress,
+    assignedTo,
+    labels,
+    notes,
+    "",
+    "",
+    question.id,
+    status,
+    response.lane || "",
+    response.owner || "",
+  ];
+}
+
+function downloadCsv() {
+  const rows = [CSV_COLUMNS];
+  state.questions.forEach((question) => {
+    const response = getResponse(question.id);
+    rows.push(buildCsvRow(question, response));
+  });
+  const csv = rows
+    .map((row) => row.map(csvEscape).join(","))
+    .join("\r\n");
+  // UTF-8 BOM so Excel detects encoding correctly on Windows
+  const bom = "\uFEFF";
+  triggerDownload(
+    bom + csv,
+    "text/csv;charset=utf-8",
+    "copilot-readiness-tracker-snapshot.csv",
+  );
+}
+
+// Minimal RFC-4180 CSV parser: returns array of rows (each row = array of fields).
+// Handles quoted fields, embedded commas, escaped quotes (""), CRLF/LF, and BOM.
+function parseCsv(text) {
+  let input = text;
+  if (input.charCodeAt(0) === 0xfeff) input = input.slice(1);
+
+  const rows = [];
+  let row = [];
+  let field = "";
+  let inQuotes = false;
+  let i = 0;
+  const n = input.length;
+
+  while (i < n) {
+    const ch = input[i];
+    if (inQuotes) {
+      if (ch === '"') {
+        if (input[i + 1] === '"') {
+          field += '"';
+          i += 2;
+          continue;
+        }
+        inQuotes = false;
+        i++;
+        continue;
+      }
+      field += ch;
+      i++;
+    } else {
+      if (ch === '"') {
+        inQuotes = true;
+        i++;
+      } else if (ch === ",") {
+        row.push(field);
+        field = "";
+        i++;
+      } else if (ch === "\r") {
+        // Treat CRLF and lone CR as row terminator
+        row.push(field);
+        rows.push(row);
+        row = [];
+        field = "";
+        i++;
+        if (input[i] === "\n") i++;
+      } else if (ch === "\n") {
+        row.push(field);
+        rows.push(row);
+        row = [];
+        field = "";
+        i++;
+      } else {
+        field += ch;
+        i++;
+      }
+    }
+  }
+  // Flush trailing field/row if file doesn't end with newline
+  if (field !== "" || row.length > 0) {
+    row.push(field);
+    rows.push(row);
+  }
+  return rows;
+}
+
+function importFromCsv(text) {
+  const rows = parseCsv(text);
+  if (rows.length < 2) {
+    throw new Error("CSV is empty or has no data rows.");
+  }
+  const headers = rows[0].map((h) => h.trim());
+  const idIdx = headers.indexOf("Question ID");
+  const statusIdx = headers.indexOf("Status");
+  const laneIdx = headers.indexOf("Lane Override");
+  const ownerIdx = headers.indexOf("Owner");
+  const notesIdx = headers.indexOf("Notes");
+
+  if (idIdx === -1) {
+    throw new Error(
+      'CSV must include a "Question ID" column (the file Planner downloads from this app).',
+    );
+  }
+
+  const knownIds = new Set(state.questions.map((q) => q.id));
+  const validStatuses = new Set(Object.keys(STATUS_META));
+  const validLanes = new Set([...LANE_ORDER, ""]);
+
+  const responses = {};
+  let applied = 0;
+  let skipped = 0;
+
+  for (let r = 1; r < rows.length; r++) {
+    const row = rows[r];
+    if (!row || row.every((c) => !c || !c.trim())) continue;
+    const id = (row[idIdx] || "").trim();
+    if (!id || !knownIds.has(id)) {
+      skipped++;
+      continue;
+    }
+    const status =
+      statusIdx >= 0 && validStatuses.has((row[statusIdx] || "").trim())
+        ? row[statusIdx].trim()
+        : "not_reviewed";
+    const laneRaw = laneIdx >= 0 ? (row[laneIdx] || "").trim() : "";
+    const lane = validLanes.has(laneRaw) ? laneRaw : "";
+    const owner = ownerIdx >= 0 ? (row[ownerIdx] || "").trim() : "";
+    // Recover the user's "Notes:" portion from the Notes column if present.
+    let comment = "";
+    if (notesIdx >= 0) {
+      const notesCell = row[notesIdx] || "";
+      const match = notesCell.match(/(?:^|\n\n)Notes:\s*([\s\S]*?)(?:\n\nStatus:|$)/);
+      if (match) comment = match[1].trim();
+    }
+    responses[id] = { status, lane, owner, comment };
+    applied++;
+  }
+
+  if (applied === 0) {
+    throw new Error("No rows matched known question IDs.");
+  }
+  state.responses = responses;
+  return { applied, skipped };
 }
 
 function importSnapshot(file) {
   const reader = new FileReader();
+  const isCsv =
+    /\.csv$/i.test(file.name) || file.type === "text/csv";
   reader.onload = () => {
+    const text = String(reader.result);
     try {
-      const parsed = JSON.parse(String(reader.result));
-      if (!parsed.responses || typeof parsed.responses !== "object") {
-        throw new Error("Invalid snapshot format.");
+      if (isCsv) {
+        const { applied, skipped } = importFromCsv(text);
+        refreshTracker();
+        const suffix = skipped > 0 ? ` (${skipped} row(s) skipped)` : "";
+        setImportFeedback(
+          `Imported ${applied} answer(s) from ${file.name}${suffix}.`,
+          "success",
+        );
+      } else {
+        const parsed = JSON.parse(text);
+        if (!parsed.responses || typeof parsed.responses !== "object") {
+          throw new Error("Invalid snapshot format.");
+        }
+        state.responses = parsed.responses;
+        refreshTracker();
+        setImportFeedback(`Imported ${file.name} successfully.`, "success");
       }
-      state.responses = parsed.responses;
-      refreshTracker();
-      setImportFeedback(`Imported ${file.name} successfully.`, "success");
-    } catch {
-      setImportFeedback("Could not import JSON snapshot.", "error");
+    } catch (err) {
+      const msg = err && err.message ? err.message : "Could not import file.";
+      setImportFeedback(msg, "error");
     }
   };
   reader.readAsText(file);
+}
+
+function triggerDownload(content, mime, filename) {
+  const blob = new Blob([content], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = filename;
+  anchor.click();
+  URL.revokeObjectURL(url);
 }
 
 function wireEvents() {
@@ -600,6 +876,7 @@ function wireEvents() {
   });
 
   el.downloadJsonBtn.addEventListener("click", downloadSnapshot);
+  el.downloadCsvBtn?.addEventListener("click", downloadCsv);
 
   el.importFile.addEventListener("change", (event) => {
     const target = event.target;
@@ -612,9 +889,13 @@ function wireEvents() {
   el.detailCloseBtn.addEventListener("click", closeDetailPanel);
   el.referencesBtn?.addEventListener("click", openReferencesPanel);
   el.referencesCloseBtn?.addEventListener("click", closeReferencesPanel);
+  el.helpBtn?.addEventListener("click", openHelpPanel);
+  el.helpCloseBtn?.addEventListener("click", closeHelpPanel);
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape") {
-      if (!el.referencesPanel?.classList.contains("hidden")) {
+      if (!el.helpPanel?.classList.contains("hidden")) {
+        closeHelpPanel();
+      } else if (!el.referencesPanel?.classList.contains("hidden")) {
         closeReferencesPanel();
       } else if (state.selectedTaskId) {
         closeDetailPanel();
