@@ -74,7 +74,7 @@ You'll be prompted in a browser the first time. If your tenant requires admin co
 
 ## Idempotency — safe to re-run
 
-The script stamps `<!-- copilot-enablement:Q-### -->` in each task's description. On re-run it:
+The script stamps `<!-- copilot-enablement:<question-id> -->` (e.g. `Q-005` or `QB-101`) in each task's description. On re-run it:
 
 1. Lists existing tasks in the plan
 2. Parses the stamp to match snapshot questions to existing tasks
@@ -95,9 +95,12 @@ You can safely run the script multiple times as you make progress through the as
 | Symptom | Likely cause | Fix |
 |---|---|---|
 | `Insufficient privileges to complete the operation` | Missing Graph consent | Re-run; ensure you accept the consent prompt, or have an admin consent for the required scopes |
-| `Resource not found` when creating the plan | Wrong `GroupId`, or you're not a member of the group | Verify the Group's Object ID and your membership |
-| Tasks created twice | Description stamp was edited manually | Delete duplicates; the script keys off the `<!-- copilot-enablement:Q-### -->` marker |
+| `Resource not found` or `403 Forbidden` when creating the plan | The **signed-in user is not a member** of the M365 Group | Planner requires the caller to be a directory member of the owning group — being an owner is not enough. Add the user as a Member, wait ~15s for replication, then re-run. |
+| Tasks created twice | Description stamp was edited manually | Delete duplicates; the script keys off the `<!-- copilot-enablement:<id> -->` marker |
 | Long titles get truncated mid-word | Planner's 255-char title limit | Edit the prompt in the source `questions.json` or accept the truncation |
+| `503 ServiceUnavailable` or `Office 365 Planner services aren't available right now` mid-run | Transient Planner backend failure (common when creating buckets/tasks rapidly in a new plan) | The script now retries with exponential backoff (up to 5 attempts). If it still fails, just re-run — idempotency means it picks up where it left off. |
+| `Object reference not set` from `DeviceCodeCredential` on the first Graph call | Stale Microsoft.Graph PowerShell token cache | Run `Disconnect-MgGraph`, delete `%LOCALAPPDATA%\.IdentityService\mg.msal.cache.*`, then sign in again |
+| WAM browser popup gets cancelled in an embedded terminal (VS Code, SSH) | WAM expects an interactive desktop session | Add `-UseDeviceCode` to fall back to the device-code flow |
 
 ## Source
 

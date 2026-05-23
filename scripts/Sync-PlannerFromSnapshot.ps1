@@ -31,6 +31,11 @@
     Print what would be created or updated without making any Graph calls that write
     data. Useful for previewing the impact before pushing into a live plan.
 
+.PARAMETER UseDeviceCode
+    Use device-code sign-in instead of the default interactive browser flow. Useful
+    when running from a headless host or embedded terminal where the WAM popup is
+    hidden or unavailable.
+
 .EXAMPLE
     ./Sync-PlannerFromSnapshot.ps1 -SnapshotPath ./snapshot.json -GroupId 11111111-2222-3333-4444-555555555555
 
@@ -56,7 +61,9 @@ param(
 
     [switch] $IncludeCompleted,
 
-    [switch] $DryRun
+    [switch] $DryRun,
+
+    [switch] $UseDeviceCode
 )
 
 $ErrorActionPreference = 'Stop'
@@ -152,10 +159,37 @@ function Build-TaskDescription {
 function Get-StampedQuestionId {
     param([string] $Description)
     if (-not $Description) { return $null }
-    if ($Description -match '<!--\s*copilot-enablement:(Q-\d+)\s*-->') {
+    if ($Description -match '<!--\s*copilot-enablement:([A-Z]+-\d+)\s*-->') {
         return $Matches[1]
     }
     return $null
+}
+
+function Invoke-WithRetry {
+    <#
+        Retries a Graph call on transient failures (HTTP 503 / ServiceUnavailable,
+        429 throttling, timeouts) with exponential backoff. Planner's underlying
+        tasks.office.com service is known to return short bursts of 503s,
+        especially when creating buckets/tasks rapidly in a new plan.
+    #>
+    param(
+        [Parameter(Mandatory)] [scriptblock] $Script,
+        [string] $What = 'Graph call',
+        [int] $MaxAttempts = 5
+    )
+    for ($attempt = 1; $attempt -le $MaxAttempts; $attempt++) {
+        try {
+            return & $Script
+        }
+        catch {
+            $msg = $_.Exception.Message
+            $transient = $msg -match 'ServiceUnavailable|503|Too many retries|UnknownError|timed out|TaskCanceled'
+            if (-not $transient -or $attempt -eq $MaxAttempts) { throw }
+            $delay = [Math]::Min(30, [Math]::Pow(2, $attempt))
+            Write-Host ("    transient failure on {0} (attempt {1}/{2}); waiting {3}s and retrying..." -f $What, $attempt, $MaxAttempts, $delay) -ForegroundColor DarkYellow
+            Start-Sleep -Seconds $delay
+        }
+    }
 }
 
 function Assert-Module {
@@ -246,8 +280,22 @@ Assert-Module @('Microsoft.Graph.Authentication', 'Microsoft.Graph.Planner')
 Import-Module Microsoft.Graph.Authentication -ErrorAction Stop
 Import-Module Microsoft.Graph.Planner -ErrorAction Stop
 
-Write-Host "Signing in (device code flow)..."
-Connect-MgGraph -Scopes 'Group.ReadWrite.All', 'Tasks.ReadWrite', 'User.Read' -NoWelcome | Out-Null
+$requiredScopes = @('Group.ReadWrite.All', 'Tasks.ReadWrite', 'User.Read')
+$existing = Get-MgContext -ErrorAction SilentlyContinue
+$hasAllScopes = $existing -and ($requiredScopes | ForEach-Object { $existing.Scopes -contains $_ }) -notcontains $false
+
+if ($hasAllScopes) {
+    Write-Host ("Reusing existing Graph session for {0}." -f $existing.Account)
+}
+else {
+    $connectParams = @{
+        Scopes    = $requiredScopes
+        NoWelcome = $true
+    }
+    if ($UseDeviceCode) { $connectParams['UseDeviceCode'] = $true }
+    Write-Host ("Signing in ({0})..." -f ($(if ($UseDeviceCode) { 'device code' } else { 'interactive browser' })))
+    Connect-MgGraph @connectParams | Out-Null
+}
 
 # --- Find or create the plan ----------------------------------------------
 
@@ -257,9 +305,11 @@ $plan = $plans | Where-Object { $_.Title -eq $PlanName } | Select-Object -First 
 
 if (-not $plan) {
     Write-Host "Creating plan '$PlanName'..."
-    $plan = New-MgPlannerPlan -BodyParameter @{
-        owner = $GroupId
-        title = $PlanName
+    $plan = Invoke-WithRetry -What "create plan '$PlanName'" -Script {
+        New-MgPlannerPlan -BodyParameter @{
+            owner = $GroupId
+            title = $PlanName
+        }
     }
 } else {
     Write-Host "Found existing plan '$PlanName' (Id: $($plan.Id))"
@@ -276,10 +326,12 @@ foreach ($b in $existingBuckets) { $bucketIdByName[$b.Name] = $b.Id }
 foreach ($g in $byWorkload) {
     if (-not $bucketIdByName.ContainsKey($g.Name)) {
         Write-Host "  Creating bucket '$($g.Name)'..."
-        $newBucket = New-MgPlannerBucket -BodyParameter @{
-            name     = $g.Name
-            planId   = $planId
-            orderHint = ' !'
+        $newBucket = Invoke-WithRetry -What "create bucket '$($g.Name)'" -Script {
+            New-MgPlannerBucket -BodyParameter @{
+                name      = $g.Name
+                planId    = $planId
+                orderHint = ' !'
+            }
         }
         $bucketIdByName[$g.Name] = $newBucket.Id
     }
@@ -336,20 +388,26 @@ foreach ($w in $work) {
         $updated++
     } else {
         Write-Host "  [create] $($q.id)  $title"
-        $newTask = New-MgPlannerTask -BodyParameter @{
-            planId          = $planId
-            bucketId        = $bucketId
-            title           = $title
-            priority        = $priority
-            percentComplete = $percent
+        $newTask = Invoke-WithRetry -What "create task $($q.id)" -Script {
+            New-MgPlannerTask -BodyParameter @{
+                planId          = $planId
+                bucketId        = $bucketId
+                title           = $title
+                priority        = $priority
+                percentComplete = $percent
+            }
         }
 
         # Task details (description) requires a follow-up PATCH with the etag
-        $newDetails = Get-MgPlannerTaskDetail -PlannerTaskId $newTask.Id
+        $newDetails = Invoke-WithRetry -What "fetch new task details" -Script {
+            Get-MgPlannerTaskDetail -PlannerTaskId $newTask.Id
+        }
         $detailEtag = $newDetails.AdditionalProperties['@odata.etag']
-        Update-MgPlannerTaskDetail -PlannerTaskId $newTask.Id -IfMatch $detailEtag -BodyParameter @{
-            description = $description
-        } | Out-Null
+        Invoke-WithRetry -What "set task description" -Script {
+            Update-MgPlannerTaskDetail -PlannerTaskId $newTask.Id -IfMatch $detailEtag -BodyParameter @{
+                description = $description
+            } | Out-Null
+        }
         $created++
     }
 }
